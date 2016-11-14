@@ -17,13 +17,9 @@
         <property name="APP_SAVED_GAMES_PATH" value="Saved Games"/>
 
         <!-- WORKSPACE CSS PROPERTIES -->
-        <property name="ROOT_BORDERPANE_ID" value="background"/>
-        <property name="TOP_TOOLBAR_ID" value="toolbar"/>
-        <property name="SEGMENTED_BUTTON_BAR" value="segmented-button-bar"/>
-        <property name="FIRST_TOOLBAR_BUTTON" value="first-toolbar-button"/>
-        <property name="LAST_TOOLBAR_BUTTON" value="last-toolbar-button"/>
         <property name="HEADING_LABEL" value="heading-label"/>
         <property name="BUTTON_STYLE" value="button-style"/>
+        <property name="LETTER_STYLE" value="letter-style"/>
 
         <!-- LABELS FOR BUTTONS -->
         <property name="LOGIN_BUTTON_LABEL" value="Log In"/>

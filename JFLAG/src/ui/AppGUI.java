@@ -3,6 +3,7 @@ package ui;
 import apptemplate.AppTemplate;
 import components.AppStyleArbiter;
 import controller.FileController;
+import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -112,6 +113,8 @@ public class AppGUI implements AppStyleArbiter {
         loginButton = initializeChildButton(sidebarPane, LOGIN_BUTTON_LABEL.toString(), LOGIN_TOOLTIP.toString(), false);
         newButton = initializeChildButton(sidebarPane, NEW_BUTTON_LABEL.toString(), NEW_TOOLTIP.toString(), false);
         closeButton = initializeChildButton(sidebarPane, EXIT_BUTTON_LABEL.toString(), EXIT_TOOLTIP.toString(), false);
+		sidebarPane.setPadding(new Insets(70,10,10,50));
+		sidebarPane.setSpacing(10);
     }
     private void initializeToolbarHandlers(AppTemplate app) throws InstantiationException
     {
@@ -212,6 +215,9 @@ public class AppGUI implements AppStyleArbiter {
         //ADD LABEL
         PropertyManager propertyManager = PropertyManager.getManager();
         Button button = new Button(propertyManager.getPropertyValue(label));
+		//SET THE BUTTONS SIZE
+		button.setMaxWidth(155);
+		button.setMinWidth(150);
         //SET UP DISABLE
         button.setDisable(disabled);
         //ADD TOOLTIP
