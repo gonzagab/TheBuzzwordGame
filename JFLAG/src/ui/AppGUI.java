@@ -46,10 +46,9 @@ public class AppGUI implements AppStyleArbiter {
     protected Scene          primaryScene;     // the scene graph
     protected BorderPane     appPane;          // the root node in the scene graph, to organize the containers
     protected VBox           sidebarPane;      // the side bar that holds buttons
-    protected StackPane      backgroundPane;
-    protected Button         newButton;        // button to create a new instance of the application
-    protected Button         loginButton;       // button to save progress on application
-    //protected Button         loadButton;       // button to load a saved game from (json) file
+    protected StackPane      backgroundPane;	// holds the app's background
+    protected Button         newButton;        // button to create a new profile
+    protected Button         loginButton;       // button to log into an already existing account
     protected Button         closeButton;       // button to exit application
     protected String         applicationTitle; // the application title
 
@@ -132,6 +131,7 @@ public class AppGUI implements AppStyleArbiter {
             System.exit(1);
         }
         newButton.setOnAction(e -> fileController.handleNewRequest());
+        loginButton.setOnAction(e -> fileController.handleLoginRequest());
 //        saveButton.setOnAction(e -> {
 //            try {
 //                fileController.handleSaveRequest();

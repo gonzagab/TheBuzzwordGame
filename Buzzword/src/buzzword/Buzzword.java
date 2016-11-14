@@ -17,7 +17,8 @@ public class Buzzword extends AppTemplate
 {
     public AppComponentsBuilder makeAppBuilderHook()
     {
-        return new AppComponentsBuilder() {
+        return new AppComponentsBuilder()
+        {
             @Override
             public AppDataComponent buildDataComponent() throws Exception
             {
@@ -35,8 +36,8 @@ public class Buzzword extends AppTemplate
             }
         };
     }
+	public String getFileControllerClass()
+	{	return "BuzzwordController";	}
     public static void main(String[] args)
-    {
-        launch(args);
-    }
+    {	launch(args);	}
 }

@@ -14,4 +14,6 @@ public interface FileController {
     void handleLoadRequest() throws IOException;
 
     void handleExitRequest();
+
+	void handleLoginRequest();
 }

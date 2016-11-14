@@ -6,6 +6,7 @@ package gui;
 public enum BuzzwordProperties
 {
 	//CSS PROPERTIES
+	SEGMENTED_BUTTON_BAR,
 	LETTER_STYLE,
 	HEADING_LABEL,
 	WORKSPACE_HEADER_LABEL,

@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import propertymanager.PropertyManager;
+import ui.AppGUI;
 import ui.AppMessageDialogSingleton;
 import ui.YesNoCancelDialogSingleton;
 
@@ -24,11 +25,12 @@ import static settings.InitializationParameters.APP_WORKDIR_PATH;
  * @author Richard McKenna, Ritwik Banerjee
  */
 @SuppressWarnings("unused")
-public class AppFileController implements FileController {
-
-    public AppTemplate           appTemplate;     // reference to the application
-    public SimpleBooleanProperty saved;           // whether or not changes have been saved
-    public File                  currentWorkFile; // the file on which currently work is being done
+public class AppFileController implements FileController
+{
+    public AppTemplate				appTemplate;	// reference to the application
+	public AppGUI					gui;			// reference to the gui
+    public SimpleBooleanProperty	saved;			// whether or not changes have been saved
+    public File						currentWorkFile;// the file on which currently work is being done
 
     /**
      * Constructor to just store the reference to the application.
@@ -49,13 +51,13 @@ public class AppFileController implements FileController {
     {
         AppMessageDialogSingleton messageDialog   = AppMessageDialogSingleton.getSingleton();
         PropertyManager           propertyManager = PropertyManager.getManager();
-        try {
+        try
+		{
             boolean continueToMakeNew = true;
-            if (!saved.getValue())
+            if(!saved.getValue())
                 continueToMakeNew = promptToSave();
-
-            // IF THE USER REALLY WANTS TO MAKE A NEW COURSE
-            if (continueToMakeNew)
+            // IF THE USER REALLY WANTS TO MAKE A NEW PROFILE
+            if(continueToMakeNew)
             {
                 appTemplate.getDataComponent().reset();                // reset the data (should be reflected in GUI)
                 appTemplate.getWorkspaceComponent().reloadWorkspace(); // load data into workspace
@@ -63,7 +65,8 @@ public class AppFileController implements FileController {
                 saved.set(false);                                      // new workspace is unsaved
                 currentWorkFile = null;                                // new workspace has never been saved to a file
             }
-        } catch (IOException ioe) {
+        } catch (IOException ioe)
+		{
             // SOMETHING WENT WRONG, PROVIDE FEEDBACK
             messageDialog.show(propertyManager.getPropertyValue(NEW_ERROR_TITLE), propertyManager.getPropertyValue(NEW_ERROR_MESSAGE));
         }
@@ -104,9 +107,11 @@ public class AppFileController implements FileController {
             dialog.show(propertyManager.getPropertyValue(SAVE_ERROR_TITLE), propertyManager.getPropertyValue(SAVE_ERROR_MESSAGE));
         }
     }
-
+	public void handleLoginRequest()
+	{}
     @Override
-    public void handleLoadRequest() {
+    public void handleLoadRequest()
+    {
 
     }
     
@@ -170,7 +175,8 @@ public class AppFileController implements FileController {
         yesNoCancelDialog.show(propertyManager.getPropertyValue(SAVE_UNSAVED_WORK_TITLE),
                                propertyManager.getPropertyValue(SAVE_UNSAVED_WORK_MESSAGE));
 
-        if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES)) {
+        if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES))
+        {
             if (currentWorkFile != null)
                 saveWork(currentWorkFile);
             else {

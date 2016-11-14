@@ -13,8 +13,8 @@ import javafx.scene.layout.Pane;
  * @author ?
  * @version 1.0
  */
-public abstract class AppWorkspaceComponent implements AppStyleArbiter {
-
+public abstract class AppWorkspaceComponent implements AppStyleArbiter
+{
     protected Pane    workspace;          // The workspace that can be customized depending on what the app needs
     protected boolean workspaceActivated; // Denotes whether or not the workspace is activated
     
@@ -26,13 +26,13 @@ public abstract class AppWorkspaceComponent implements AppStyleArbiter {
      *                this framework manages, as well as the customly provided workspace,
      *                which would be different for each app.
      */
-    public void activateWorkspace(BorderPane appPane) {
+    public void activateWorkspace(BorderPane appPane)
+	{
         if (!workspaceActivated) {
             appPane.setCenter(workspace);
             workspaceActivated = true;
         }
     }
-    
     /**
      * Mutator method for setting the custom workspace.
      *
@@ -41,14 +41,12 @@ public abstract class AppWorkspaceComponent implements AppStyleArbiter {
     public void setWorkspace(Pane initWorkspace) {
         workspace = initWorkspace;
     }
-    
     /**
      * Accessor method for getting the workspace.
      *
      * @return The workspace pane for this app.
      */
     public Pane getWorkspace() { return workspace; }
-    
     /**
      * This method is defined completely at the concrete implementation level.
      */

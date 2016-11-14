@@ -20,6 +20,7 @@
         <property name="HEADING_LABEL" value="heading-label"/>
         <property name="BUTTON_STYLE" value="button-style"/>
         <property name="LETTER_STYLE" value="letter-style"/>
+        <property name="SEGMENTED_BUTTON_BAR" value="segmented-button-bar"/>
 
         <!-- LABELS FOR BUTTONS -->
         <property name="LOGIN_BUTTON_LABEL" value="Log In"/>
