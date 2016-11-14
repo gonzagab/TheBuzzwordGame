@@ -54,7 +54,8 @@ public abstract class AppTemplate extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage)
+	{
         AppMessageDialogSingleton  messageDialog = AppMessageDialogSingleton.getSingleton();
         YesNoCancelDialogSingleton yesNoDialog   = YesNoCancelDialogSingleton.getSingleton();
         messageDialog.init(primaryStage);
@@ -93,8 +94,9 @@ public abstract class AppTemplate extends Application {
         {
             propertyManager.loadProperties(AppTemplate.class, propertyParameter.getParameter(), PROPERTIES_SCHEMA_XSD.getParameter());
         }
-        catch (InvalidXMLFileFormatException e) {
-            AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+        catch (InvalidXMLFileFormatException e)
+		{
+			AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
             dialog.show(propertyManager.getPropertyValue(PROPERTIES_LOAD_ERROR_TITLE.toString()),
                         propertyManager.getPropertyValue(PROPERTIES_LOAD_ERROR_MESSAGE.toString()));
             return false;
@@ -102,7 +104,8 @@ public abstract class AppTemplate extends Application {
         return true;
     }
 
-    public void initStylesheet() {
+    public void initStylesheet()
+	{
         URL cssResource = getClass().getClassLoader().getResource(propertyManager.getPropertyValue(APP_PATH_CSS) +
                                                                   File.separator +
                                                                   propertyManager.getPropertyValue(APP_CSS));

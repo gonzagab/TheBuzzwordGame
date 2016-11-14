@@ -8,13 +8,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -65,59 +63,56 @@ public class AppGUI implements AppStyleArbiter {
      *                         will appear in the window bar.
      * @param app              The app within this gui is used.
      */
-    public AppGUI(Stage initPrimaryStage, String initAppTitle, AppTemplate app) throws IOException, InstantiationException {
+    public AppGUI(Stage initPrimaryStage, String initAppTitle, AppTemplate app) throws IOException, InstantiationException
+    {
         this(initPrimaryStage, initAppTitle, app, -1, -1);
     }
-
     public AppGUI(Stage primaryStage, String applicationTitle, AppTemplate appTemplate, int appSpecificWindowWidth, int appSpecificWindowHeight)
-            throws IOException, InstantiationException {
+            throws IOException, InstantiationException
+    {
         this.appSpecificWindowWidth = appSpecificWindowWidth;
         this.appSpecificWindowHeight = appSpecificWindowHeight;
         this.primaryStage = primaryStage;
         this.applicationTitle = applicationTitle;
-        initializeToolbar();                    // initialize the top toolbar
+        initializeSidebar();                    // initialize the buttons on the side bar
         initializeToolbarHandlers(appTemplate); // set the toolbar button handlers
         initializeWindow();                     // start the app window (without the application-specific workspace)
-
     }
-
-    public VBox getSidebarPane() { return sidebarPane; }
-
-    public BorderPane getAppPane() { return appPane; }
-    
+    public VBox getSidebarPane()
+    { return sidebarPane; }
+    public BorderPane getAppPane()
+    { return appPane; }
     /**
      * Accessor method for getting this application's primary stage's,
      * scene.
      *
      * @return This application's window's scene.
      */
-    public Scene getPrimaryScene() { return primaryScene; }
-    
+    public Scene getPrimaryScene()
+    { return primaryScene; }
     /**
      * Accessor method for getting this application's window,
      * which is the primary stage within which the full GUI will be placed.
      *
      * @return This application's primary stage (i.e. window).
      */
-    public Stage getWindow() { return primaryStage; }
+    public Stage getWindow()
+    { return primaryStage; }
 
     /****************************************************************************/
     /* BELOW ARE ALL THE PRIVATE HELPER METHODS WE USE FOR INITIALIZING OUR AppGUI */
     /****************************************************************************/
-    
     /**
      * This function initializes all the buttons in the toolbar at the top of
      * the application window. These are related to file management.
      */
-    private void initializeToolbar() throws IOException
+    private void initializeSidebar() throws IOException
     {
         sidebarPane = new VBox();
-        newButton = initializeChildButton(sidebarPane, NEW_ICON.toString(), NEW_TOOLTIP.toString(), false);
-        //loadButton = initializeChildButton(toolbarPane, LOAD_ICON.toString(), LOAD_TOOLTIP.toString(), false);
-        //saveButton = initializeChildButton(toolbarPane, SAVE_ICON.toString(), SAVE_TOOLTIP.toString(), true);
-        closeButton = initializeChildButton(sidebarPane, EXIT_ICON.toString(), EXIT_TOOLTIP.toString(), false);
+        loginButton = initializeChildButton(sidebarPane, LOGIN_BUTTON_LABEL.toString(), LOGIN_TOOLTIP.toString(), false);
+        newButton = initializeChildButton(sidebarPane, NEW_BUTTON_LABEL.toString(), NEW_TOOLTIP.toString(), false);
+        closeButton = initializeChildButton(sidebarPane, EXIT_BUTTON_LABEL.toString(), EXIT_TOOLTIP.toString(), false);
     }
-
     private void initializeToolbarHandlers(AppTemplate app) throws InstantiationException
     {
         try
@@ -151,14 +146,12 @@ public class AppGUI implements AppStyleArbiter {
 //        });
         closeButton.setOnAction(e -> fileController.handleExitRequest());
     }
-
     public void updateWorkspaceToolbar(boolean savable)
     {
         // saveButton.setDisable(!savable);
         newButton.setDisable(false);
         closeButton.setDisable(false);
     }
-
     // INITIALIZE THE WINDOW (i.e. STAGE) PUTTING ALL THE CONTROLS
     // THERE EXCEPT THE WORKSPACE, WHICH WILL BE ADDED THE FIRST
     // TIME A NEW Page IS CREATED OR LOADED
@@ -178,10 +171,9 @@ public class AppGUI implements AppStyleArbiter {
         // ADD THE TOOLBAR ONLY, NOTE THAT THE WORKSPACE
         // HAS BEEN CONSTRUCTED, BUT WON'T BE ADDED UNTIL
         // THE USER STARTS EDITING A COURSE
-        //  SET UP BACKGROUND
+        // SET UP BACKGROUND
         backgroundPane = new StackPane();
-        Rectangle background = new Rectangle(appSpecificWindowWidth, appSpecificWindowHeight, LinearGradient.valueOf("from 0% 0% to 100% 100%, red  0% , blue 30%,  black 100%"));
-
+        Rectangle background = new Rectangle(appSpecificWindowWidth, appSpecificWindowHeight, LinearGradient.valueOf("from 0% 100% to 100% 100%, #adb0ab  20% , #D8D8D8 20%,  #D8D8D8 60%"));
         appPane = new BorderPane();
         appPane.setLeft(sidebarPane);
         //PUT EVERYTHING TOGETHER
@@ -204,70 +196,41 @@ public class AppGUI implements AppStyleArbiter {
         primaryStage.sizeToScene();
         primaryStage.show();
     }
-    
     /**
      * This is a public helper method for initializing a simple button with
      * an icon and tooltip and placing it into a toolbar.
      *
      * @param toolbarPane Toolbar pane into which to place this button.
-     * @param icon        Icon image file name for the button.
+     * @param label       property name for the label of the Button
      * @param tooltip     Tooltip to appear when the user mouses over the button.
      * @param disabled    true if the button is to start off disabled, false otherwise.
      * @return A constructed, fully initialized button placed into its appropriate
      * pane container.
      */
-    public Button initializeChildButton(Pane toolbarPane, String icon, String tooltip, boolean disabled) throws IOException
+    public Button initializeChildButton(Pane toolbarPane, String label, String tooltip, boolean disabled) throws IOException
     {
+        //ADD LABEL
         PropertyManager propertyManager = PropertyManager.getManager();
-
-        //URL imgDirURL = AppTemplate.class.getClassLoader().getResource(APP_IMAGEDIR_PATH.getParameter());
-        //if (imgDirURL == null)
-        //throw new FileNotFoundException("Image resources folder does not exist.");
-
-        Button button = new Button();
-        try
-        {
-            //button.setStyle("");
-            //Image buttonImage = new Image(imgInputStream);
-            //button.setGraphic(new ImageView(buttonImage));
-
-            button.setStyle("-fx-background-color: \n" +
-                    "        #090a0c,\n" +
-                    "        linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%),\n" +
-                    "        linear-gradient(#20262b, #191d22),\n" +
-                    "        radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0));\n" +
-                    "    -fx-background-radius: 30;\n" +
-                    "    -fx-background-insets: 0,1,2,3,0;\n" +
-                    "    -fx-text-fill: #654b00;\n" +
-                    "    -fx-font-weight: bold;\n" +
-                    "    -fx-font-size: 14px;\n" +
-                    "    -fx-padding: 10 20 10 20;");
-
-            button.setDisable(disabled);
-            Tooltip buttonTooltip = new Tooltip(propertyManager.getPropertyValue(tooltip));
-            button.setTooltip(buttonTooltip);
-            toolbarPane.getChildren().add(button);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
+        Button button = new Button(propertyManager.getPropertyValue(label));
+        //SET UP DISABLE
+        button.setDisable(disabled);
+        //ADD TOOLTIP
+        Tooltip buttonTooltip = new Tooltip(propertyManager.getPropertyValue(tooltip));
+        button.setTooltip(buttonTooltip);
+        //ADD BUTTON TO THE PANE
+        toolbarPane.getChildren().add(button);
+        //AND FINALLY RETURN
         return button;
     }
-    
     /**
      * This function specifies the CSS style classes for the controls managed
      * by this framework.
      */
     @Override
-    public void initStyle() {
+    public void initStyle()
+    {
         // currently, we do not provide any stylization at the framework-level
     }
-
     public FileController getFileController()
-    {
-        return fileController;
-    }
+    {return fileController;}
 }

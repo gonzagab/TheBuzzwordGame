@@ -10,11 +10,11 @@
     <property_list>
         <property name="APP_WINDOW_WIDTH" value="750"/>
         <property name="APP_WINDOW_HEIGHT" value="600"/>
-        <property name="APP_TITLE" value="Hangman"/>
+        <property name="APP_TITLE" value="Buzzword"/>
         <property name="APP_LOGO" value="logoImage.jpg"/>
         <property name="APP_PATH_CSS" value="css"/>
-        <property name="APP_CSS" value="hangman_style.css"/>
-        <property name="APP_SAVED_GAMES_PATH" value="work"/>
+        <property name="APP_CSS" value="buzzword_style.css"/>
+        <property name="APP_SAVED_GAMES_PATH" value="Saved Games"/>
 
         <!-- WORKSPACE CSS PROPERTIES -->
         <property name="ROOT_BORDERPANE_ID" value="background"/>
@@ -23,30 +23,30 @@
         <property name="FIRST_TOOLBAR_BUTTON" value="first-toolbar-button"/>
         <property name="LAST_TOOLBAR_BUTTON" value="last-toolbar-button"/>
         <property name="HEADING_LABEL" value="heading-label"/>
+        <property name="BUTTON_STYLE" value="button-style"/>
 
-        <!-- PROGRAM ICON FILES -->
-        <property name="NEW_ICON" value="New.png"/>
-        <property name="LOAD_ICON" value="Load.png"/>
-        <property name="SAVE_ICON" value="Save.png"/>
-        <property name="EXIT_ICON" value="Exit.png"/>
+        <!-- LABELS FOR BUTTONS -->
+        <property name="LOGIN_BUTTON_LABEL" value="Log In"/>
+        <property name="NEW_BUTTON_LABEL" value="Create New Profile"/>
+        <property name="EXIT_BUTTON_LABEL" value="Close Application"/>
 
         <!-- TOOLTIPS FOR BUTTONS -->
-        <property name="NEW_TOOLTIP" value="Start a new game"/>
+        <property name="LOGIN_TOOLTIP" value="Login To Your Account"/>
+        <property name="NEW_TOOLTIP" value="Create A New Profile"/>
         <property name="LOAD_TOOLTIP" value="Load a saved game"/>
         <property name="SAVE_TOOLTIP" value="Save game"/>
         <property name="EXIT_TOOLTIP" value="Exit application"/>
 
         <!-- ERROR MESSAGES -->
         <property name="CLOSE_BUTTON_TEXT" value="Close"/>
-
         <property name="NEW_ERROR_TITLE" value="Creation Error"/>
-        <property name="NEW_ERROR_MESSAGE" value="An error occured starting a new game"/>
+        <property name="NEW_ERROR_MESSAGE" value="An error occurred starting a new game"/>
         <property name="LOAD_ERROR_TITLE" value="Load Error"/>
-        <property name="LOAD_ERROR_MESSAGE" value="An error occured loading saved game"/>
+        <property name="LOAD_ERROR_MESSAGE" value="An error occurred loading saved game"/>
         <property name="SAVE_ERROR_TITLE" value="Save Error"/>
-        <property name="SAVE_ERROR_MESSAGE" value="An error occured saving game"/>
+        <property name="SAVE_ERROR_MESSAGE" value="An error occurred saving game"/>
         <property name="PROPERTIES_LOAD_ERROR_TITLE" value="Property Load Error"/>
-        <property name="PROPERTIES_LOAD_ERROR_MESSAGE" value="An error occured loading a property file."/>
+        <property name="PROPERTIES_LOAD_ERROR_MESSAGE" value="An error occurred loading a property file."/>
 
         <!-- VERIFICATION MESSAGES -->
         <property name="NEW_COMPLETED_MESSAGE" value="New Game Ready"/>

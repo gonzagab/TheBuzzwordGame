@@ -30,10 +30,9 @@
 
 
         <!-- ERROR MESSAGES AND TITLES FOR THEIR DIALOGS -->
-        <property name="ATTRIBUTE_UPDATE_ERROR_MESSAGE"
-                  value="WARNING: An error occured updating the element's attribute."/>
+        <property name="ATTRIBUTE_UPDATE_ERROR_MESSAGE" value="WARNING: An error occurred updating the element's attribute."/>
         <property name="ATTRIBUTE_UPDATE_ERROR_TITLE" value="Attribute Update Error"/>
-        <property name="UPDATE_ERROR_MESSAGE" value="An error occured updating the UI"/>
+        <property name="UPDATE_ERROR_MESSAGE" value="An error occurred updating the UI"/>
         <property name="UPDATE_ERROR_TITLE" value="UI Update Error"/>
 
     </property_list>

@@ -6,6 +6,8 @@ import components.AppDataComponent;
 import components.AppFileComponent;
 import components.AppWorkspaceComponent;
 import data.GameData;
+import data.GameDataFile;
+import gui.Workspace;
 
 
 /**
@@ -17,18 +19,19 @@ public class Buzzword extends AppTemplate
     {
         return new AppComponentsBuilder() {
             @Override
-            public AppDataComponent buildDataComponent() throws Exception {
+            public AppDataComponent buildDataComponent() throws Exception
+            {
                 return new GameData();
             }
-
             @Override
-            public AppFileComponent buildFileComponent() throws Exception {
-                return null;
+            public AppFileComponent buildFileComponent() throws Exception
+			{
+                return new GameDataFile();
             }
-
             @Override
-            public AppWorkspaceComponent buildWorkspaceComponent() throws Exception {
-                return null;
+            public AppWorkspaceComponent buildWorkspaceComponent() throws Exception
+			{
+                return new Workspace(Buzzword.this);
             }
         };
     }

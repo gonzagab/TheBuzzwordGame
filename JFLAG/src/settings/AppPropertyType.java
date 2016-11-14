@@ -9,8 +9,8 @@ package settings;
  * @version 1.0
  */
 @SuppressWarnings("unused")
-public enum AppPropertyType {
-
+public enum AppPropertyType
+{
     // from app-properties.xml
     APP_WINDOW_WIDTH,
     APP_WINDOW_HEIGHT,
@@ -19,14 +19,14 @@ public enum AppPropertyType {
     APP_CSS,
     APP_PATH_CSS,
 
-    // APPLICATION ICONS
-    NEW_ICON,
-    SAVE_ICON,
-    LOAD_ICON,
-    EXIT_ICON,
+	// BUTTON LABELS
+    LOGIN_BUTTON_LABEL,
+	NEW_BUTTON_LABEL,
+	EXIT_BUTTON_LABEL,
 
     // APPLICATION TOOLTIPS FOR BUTTONS
-    NEW_TOOLTIP,
+    LOGIN_TOOLTIP,
+	NEW_TOOLTIP,
     SAVE_TOOLTIP,
     LOAD_TOOLTIP,
     EXIT_TOOLTIP,

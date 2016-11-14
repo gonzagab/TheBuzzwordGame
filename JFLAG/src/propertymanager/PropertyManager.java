@@ -84,7 +84,8 @@ public class PropertyManager {
         return properties.get(property.toString()) != null;
     }
     
-    public void loadProperties(Class klass, String xmlfilename, String schemafilename) throws InvalidXMLFileFormatException {
+    public void loadProperties(Class klass, String xmlfilename, String schemafilename) throws InvalidXMLFileFormatException
+    {
         URL             xmlFileResource    = klass.getClassLoader().getResource(PROPERTIES_RESOURCE_RELATIVE_PATH + File.separator + xmlfilename);
         URL             schemaFileResource = klass.getClassLoader().getResource(PROPERTIES_RESOURCE_RELATIVE_PATH + File.separator + schemafilename);
         Document        document           = xmlUtilities.loadXMLDocument(xmlFileResource, schemaFileResource);
@@ -98,7 +99,6 @@ public class PropertyManager {
                 properties.put(attName, attValue);
             }
         }
-        
         // AND THE PROPERTIES FROM OPTION LISTS
         Node propertyOptionsListNode = xmlUtilities.getNodeWithName(document, PROPERTY_OPTIONS_LIST_ELEMENT);
         if (propertyOptionsListNode != null) {
