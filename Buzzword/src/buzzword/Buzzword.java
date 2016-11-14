@@ -5,6 +5,7 @@ import components.AppComponentsBuilder;
 import components.AppDataComponent;
 import components.AppFileComponent;
 import components.AppWorkspaceComponent;
+import data.GameData;
 
 
 /**
@@ -17,7 +18,7 @@ public class Buzzword extends AppTemplate
         return new AppComponentsBuilder() {
             @Override
             public AppDataComponent buildDataComponent() throws Exception {
-                return null;
+                return new GameData();
             }
 
             @Override

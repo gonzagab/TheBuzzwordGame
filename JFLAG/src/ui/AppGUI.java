@@ -2,7 +2,6 @@ package ui;
 
 import apptemplate.AppTemplate;
 import components.AppStyleArbiter;
-import controller.AppFileController;
 import controller.FileController;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -11,8 +10,12 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import propertymanager.PropertyManager;
@@ -43,11 +46,12 @@ public class AppGUI implements AppStyleArbiter {
     protected Stage          primaryStage;     // the application window
     protected Scene          primaryScene;     // the scene graph
     protected BorderPane     appPane;          // the root node in the scene graph, to organize the containers
-    protected FlowPane       toolbarPane;      // the top toolbar
+    protected VBox           sidebarPane;      // the side bar that holds buttons
+    protected StackPane      backgroundPane;
     protected Button         newButton;        // button to create a new instance of the application
-    protected Button         saveButton;       // button to save progress on application
-    protected Button         loadButton;       // button to load a saved game from (json) file
-    protected Button         exitButton;       // button to exit application
+    protected Button         loginButton;       // button to save progress on application
+    //protected Button         loadButton;       // button to load a saved game from (json) file
+    protected Button         closeButton;       // button to exit application
     protected String         applicationTitle; // the application title
 
     private int appSpecificWindowWidth;  // optional parameter for window width that can be set by the application
@@ -77,7 +81,7 @@ public class AppGUI implements AppStyleArbiter {
 
     }
 
-    public FlowPane getToolbarPane() { return toolbarPane; }
+    public VBox getSidebarPane() { return sidebarPane; }
 
     public BorderPane getAppPane() { return appPane; }
     
@@ -107,84 +111,90 @@ public class AppGUI implements AppStyleArbiter {
      */
     private void initializeToolbar() throws IOException
     {
-        toolbarPane = new FlowPane();
-        newButton = initializeChildButton(toolbarPane, NEW_ICON.toString(), NEW_TOOLTIP.toString(), false);
-        loadButton = initializeChildButton(toolbarPane, LOAD_ICON.toString(), LOAD_TOOLTIP.toString(), false);
-        saveButton = initializeChildButton(toolbarPane, SAVE_ICON.toString(), SAVE_TOOLTIP.toString(), true);
-        exitButton = initializeChildButton(toolbarPane, EXIT_ICON.toString(), EXIT_TOOLTIP.toString(), false);
+        sidebarPane = new VBox();
+        newButton = initializeChildButton(sidebarPane, NEW_ICON.toString(), NEW_TOOLTIP.toString(), false);
+        //loadButton = initializeChildButton(toolbarPane, LOAD_ICON.toString(), LOAD_TOOLTIP.toString(), false);
+        //saveButton = initializeChildButton(toolbarPane, SAVE_ICON.toString(), SAVE_TOOLTIP.toString(), true);
+        closeButton = initializeChildButton(sidebarPane, EXIT_ICON.toString(), EXIT_TOOLTIP.toString(), false);
     }
 
     private void initializeToolbarHandlers(AppTemplate app) throws InstantiationException
     {
-        try {
+        try
+        {
             Method         getFileControllerClassMethod = app.getClass().getMethod("getFileControllerClass");
             String         fileControllerClassName      = (String) getFileControllerClassMethod.invoke(app);
             Class<?>       klass                        = Class.forName("controller." + fileControllerClassName);
             Constructor<?> constructor                  = klass.getConstructor(AppTemplate.class);
             fileController = (FileController) constructor.newInstance(app);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | ClassNotFoundException e) {
+        }
+        catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException | ClassNotFoundException e)
+        {
             e.printStackTrace();
             System.exit(1);
         }
-
         newButton.setOnAction(e -> fileController.handleNewRequest());
-        saveButton.setOnAction(e -> {
-            try {
-                fileController.handleSaveRequest();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-                System.exit(1);
-            }
-        });
-        loadButton.setOnAction(e -> {
-            try {
-                fileController.handleLoadRequest();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        });
-        exitButton.setOnAction(e -> fileController.handleExitRequest());
+//        saveButton.setOnAction(e -> {
+//            try {
+//                fileController.handleSaveRequest();
+//            } catch (IOException e1) {
+//                e1.printStackTrace();
+//                System.exit(1);
+//            }
+//        });
+//        loadButton.setOnAction(e -> {
+//            try {
+//                fileController.handleLoadRequest();
+//            } catch (IOException e1) {
+//                e1.printStackTrace();
+//            }
+//        });
+        closeButton.setOnAction(e -> fileController.handleExitRequest());
     }
 
     public void updateWorkspaceToolbar(boolean savable)
     {
-        saveButton.setDisable(!savable);
+        // saveButton.setDisable(!savable);
         newButton.setDisable(false);
-        exitButton.setDisable(false);
+        closeButton.setDisable(false);
     }
 
     // INITIALIZE THE WINDOW (i.e. STAGE) PUTTING ALL THE CONTROLS
     // THERE EXCEPT THE WORKSPACE, WHICH WILL BE ADDED THE FIRST
     // TIME A NEW Page IS CREATED OR LOADED
-    private void initializeWindow() throws IOException {
+    private void initializeWindow() throws IOException
+    {
         PropertyManager propertyManager = PropertyManager.getManager();
-
         // SET THE WINDOW TITLE
         primaryStage.setTitle(applicationTitle);
-
         // GET THE SIZE OF THE SCREEN
         Screen      screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
-
         // AND USE IT TO SIZE THE WINDOW
         primaryStage.setX(bounds.getMinX());
         primaryStage.setY(bounds.getMinY());
         primaryStage.setWidth(bounds.getWidth());
         primaryStage.setHeight(bounds.getHeight());
-
         // ADD THE TOOLBAR ONLY, NOTE THAT THE WORKSPACE
         // HAS BEEN CONSTRUCTED, BUT WON'T BE ADDED UNTIL
         // THE USER STARTS EDITING A COURSE
+        //  SET UP BACKGROUND
+        backgroundPane = new StackPane();
+        Rectangle background = new Rectangle(appSpecificWindowWidth, appSpecificWindowHeight, LinearGradient.valueOf("from 0% 0% to 100% 100%, red  0% , blue 30%,  black 100%"));
+
         appPane = new BorderPane();
-        appPane.setTop(toolbarPane);
+        appPane.setLeft(sidebarPane);
+        //PUT EVERYTHING TOGETHER
+        backgroundPane.getChildren().addAll(background, appPane);
         primaryScene = appSpecificWindowWidth < 1 || appSpecificWindowHeight < 1
-                ?new Scene(appPane)
-                :new Scene(appPane, appSpecificWindowWidth, appSpecificWindowHeight);
+                ?new Scene(backgroundPane)
+                :new Scene(backgroundPane, appSpecificWindowWidth, appSpecificWindowHeight);
 
         URL imgDirURL = AppTemplate.class.getClassLoader().getResource(APP_IMAGEDIR_PATH.getParameter());
         if (imgDirURL == null)
-            throw new FileNotFoundException("Image resrouces folder does not exist.");
-        try (InputStream appLogoStream = Files.newInputStream(Paths.get(imgDirURL.toURI()).resolve(propertyManager.getPropertyValue(APP_LOGO)))) {
+            throw new FileNotFoundException("Image resources folder does not exist.");
+        try (InputStream appLogoStream = Files.newInputStream(Paths.get(imgDirURL.toURI()).resolve(propertyManager.getPropertyValue(APP_LOGO))))
+        {
             primaryStage.getIcons().add(new Image(appLogoStream));
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -206,24 +216,39 @@ public class AppGUI implements AppStyleArbiter {
      * @return A constructed, fully initialized button placed into its appropriate
      * pane container.
      */
-    public Button initializeChildButton(Pane toolbarPane, String icon, String tooltip, boolean disabled) throws IOException {
+    public Button initializeChildButton(Pane toolbarPane, String icon, String tooltip, boolean disabled) throws IOException
+    {
         PropertyManager propertyManager = PropertyManager.getManager();
 
-        URL imgDirURL = AppTemplate.class.getClassLoader().getResource(APP_IMAGEDIR_PATH.getParameter());
-        if (imgDirURL == null)
-            throw new FileNotFoundException("Image resources folder does not exist.");
+        //URL imgDirURL = AppTemplate.class.getClassLoader().getResource(APP_IMAGEDIR_PATH.getParameter());
+        //if (imgDirURL == null)
+        //throw new FileNotFoundException("Image resources folder does not exist.");
 
         Button button = new Button();
-        try (InputStream imgInputStream = Files.newInputStream(Paths.get(imgDirURL.toURI()).resolve(propertyManager.getPropertyValue(icon))))
+        try
         {
-            Image buttonImage = new Image(imgInputStream);
+            //button.setStyle("");
+            //Image buttonImage = new Image(imgInputStream);
+            //button.setGraphic(new ImageView(buttonImage));
+
+            button.setStyle("-fx-background-color: \n" +
+                    "        #090a0c,\n" +
+                    "        linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%),\n" +
+                    "        linear-gradient(#20262b, #191d22),\n" +
+                    "        radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0));\n" +
+                    "    -fx-background-radius: 30;\n" +
+                    "    -fx-background-insets: 0,1,2,3,0;\n" +
+                    "    -fx-text-fill: #654b00;\n" +
+                    "    -fx-font-weight: bold;\n" +
+                    "    -fx-font-size: 14px;\n" +
+                    "    -fx-padding: 10 20 10 20;");
+
             button.setDisable(disabled);
-            button.setGraphic(new ImageView(buttonImage));
             Tooltip buttonTooltip = new Tooltip(propertyManager.getPropertyValue(tooltip));
             button.setTooltip(buttonTooltip);
             toolbarPane.getChildren().add(button);
         }
-        catch (URISyntaxException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             System.exit(1);
@@ -241,10 +266,8 @@ public class AppGUI implements AppStyleArbiter {
         // currently, we do not provide any stylization at the framework-level
     }
 
-    //////////////// Added Code ///////////////
     public FileController getFileController()
     {
         return fileController;
     }
-    ///////////^^^ Added Code ^^^///////////////
 }

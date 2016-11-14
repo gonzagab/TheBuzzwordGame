@@ -34,12 +34,14 @@ public class PropertyManager {
     // Location of the properties resources, relative to the root resource folder for the application
     public static final String PROPERTIES_RESOURCE_RELATIVE_PATH = "properties";
 
-    private PropertyManager() {
+    private PropertyManager()
+    {
         properties = new HashMap<>();
         propertyOptions = new HashMap<>();
     }
 
-    public static PropertyManager getManager() {
+    public static PropertyManager getManager()
+    {
         if (singleton == null)
             singleton = new PropertyManager();
         return singleton;

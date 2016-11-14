@@ -6,7 +6,6 @@ package settings;
 public enum InitializationParameters {
 
     APP_PROPERTIES_XML("app-properties.xml"),
-    APP_ESP_PROPERTIES_XML("app-properties - esp.xml"),
     WORKSPACE_PROPERTIES_XML("workspace-properties.xml"),
     PROPERTIES_SCHEMA_XSD("properties-schema.xsd"),
     ERROR_DIALOG_BUTTON_LABEL("Exit application."),

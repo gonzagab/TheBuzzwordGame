@@ -60,32 +60,10 @@ public abstract class AppTemplate extends Application {
         messageDialog.init(primaryStage);
         yesNoDialog.init(primaryStage);
 
-        YesNoCancelDialogSingleton language   = YesNoCancelDialogSingleton.getSingleton();
-        language.init(primaryStage);
-
-        language.show("Spanish or English", "Yes for English and No For Spanish");
-        boolean english;
-        english = language.getSelection().equals("Yes");
-
-        try {
-            if (english) {
-                if (loadProperties(APP_PROPERTIES_XML) && loadProperties(WORKSPACE_PROPERTIES_XML)) {
-                    AppComponentsBuilder builder = makeAppBuilderHook();
-
-                    fileComponent = builder.buildFileComponent();
-                    dataComponent = builder.buildDataComponent();
-                    gui = (propertyManager.hasProperty(APP_WINDOW_WIDTH) && propertyManager.hasProperty(APP_WINDOW_HEIGHT))
-                            ? new AppGUI(primaryStage, propertyManager.getPropertyValue(APP_TITLE.toString()), this,
-                            Integer.parseInt(propertyManager.getPropertyValue(APP_WINDOW_WIDTH)),
-                            Integer.parseInt(propertyManager.getPropertyValue(APP_WINDOW_HEIGHT)))
-                            : new AppGUI(primaryStage, propertyManager.getPropertyValue(APP_TITLE.toString()), this);
-                    workspaceComponent = builder.buildWorkspaceComponent();
-                    initStylesheet();
-                    gui.initStyle();
-                    workspaceComponent.initStyle();
-                }
-            } else{
-                if (loadProperties(APP_ESP_PROPERTIES_XML) && loadProperties(WORKSPACE_PROPERTIES_XML)) {
+        try
+        {
+            if(loadProperties(APP_PROPERTIES_XML) && loadProperties(WORKSPACE_PROPERTIES_XML))
+            {
                 AppComponentsBuilder builder = makeAppBuilderHook();
 
                 fileComponent = builder.buildFileComponent();
@@ -101,23 +79,26 @@ public abstract class AppTemplate extends Application {
                 workspaceComponent.initStyle();
             }
         }
-        } catch (Exception e) {
+        catch (Exception e)
+        {
             AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
             dialog.show(propertyManager.getPropertyValue(PROPERTIES_LOAD_ERROR_TITLE.toString()),
-                        propertyManager.getPropertyValue(PROPERTIES_LOAD_ERROR_MESSAGE.toString()));
+                    propertyManager.getPropertyValue(PROPERTIES_LOAD_ERROR_MESSAGE.toString()));
         }
     }
 
-    public boolean loadProperties(InitializationParameters propertyParameter) {
-        try {
+    public boolean loadProperties(InitializationParameters propertyParameter)
+    {
+        try
+        {
             propertyManager.loadProperties(AppTemplate.class, propertyParameter.getParameter(), PROPERTIES_SCHEMA_XSD.getParameter());
-        } catch (InvalidXMLFileFormatException e) {
+        }
+        catch (InvalidXMLFileFormatException e) {
             AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
             dialog.show(propertyManager.getPropertyValue(PROPERTIES_LOAD_ERROR_TITLE.toString()),
                         propertyManager.getPropertyValue(PROPERTIES_LOAD_ERROR_MESSAGE.toString()));
             return false;
         }
-
         return true;
     }
 
