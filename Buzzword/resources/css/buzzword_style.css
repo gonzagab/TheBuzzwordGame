@@ -14,6 +14,43 @@
     -fx-font-weight: bold;
     -fx-opacity: 1;
 }
+.label-style
+{
+    -fx-font-size: 12pt;
+    -fx-font-family: "Segoe UI Light";
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-opacity: 1;
+}
+.button-style
+{
+    -fx-background-color: white;
+    -fx-background-radius: 25;
+    -fx-background-insets: 0,1,2,3,0;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-opacity: .4;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.4) , 5, 0.0 , 0 , 1 );
+}
+
+.button-style:pressed
+{
+    -fx-background-color:
+        white,
+        rgb(55, 20, 20),
+        linear-gradient(to top, white 2%, grey 98%);
+}
+
+.textfield-style
+{
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 2px;
+    -fx-border-color: white;
+    -fx-text-fill: white;
+
+}
+
 #background {
     -light-black: rgb(74, 75, 78);
     -dark-highlight: rgb(87, 89, 92);
@@ -32,22 +69,4 @@
     -fx-background-insets: 0, 0 0 1 0;
     -fx-padding: .9em 0.416667em .9em 0.416667em;
     -fx-effect: dropshadow(two-pass-box,black,5,.2,0,0);
-}
-.button-style
-{
-    -fx-background-color: white;
-    -fx-background-radius: 25;
-    -fx-background-insets: 0,1,2,3,0;
-    -fx-text-fill: black;
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-opacity: .4;
-    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.4) , 5, 0.0 , 0 , 1 );
-}
-.button-style:pressed
-{
-    -fx-background-color:
-        white,
-        rgb(55, 20, 20),
-        linear-gradient(to top, white 2%, grey 98%);
 }

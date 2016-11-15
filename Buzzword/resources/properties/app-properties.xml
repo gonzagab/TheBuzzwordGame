@@ -21,6 +21,8 @@
         <property name="BUTTON_STYLE" value="button-style"/>
         <property name="LETTER_STYLE" value="letter-style"/>
         <property name="SEGMENTED_BUTTON_BAR" value="segmented-button-bar"/>
+        <property name="TEXTFIELD_STYLE" value="textfield-style"/>
+        <property name="LABEL_STYLE" value="label-style"/>
 
         <!-- LABELS FOR BUTTONS -->
         <property name="LOGIN_BUTTON_LABEL" value="Log In"/>
@@ -33,6 +35,9 @@
         <property name="LOAD_TOOLTIP" value="Load a saved game"/>
         <property name="SAVE_TOOLTIP" value="Save game"/>
         <property name="EXIT_TOOLTIP" value="Exit application"/>
+
+        <!-- TOOLTIPS FOR DROP DOWN MENU -->
+        <property name="GAME_MODE_MENU_TOOLTIP" value="Choose a Game Mode"/>
 
         <!-- ERROR MESSAGES -->
         <property name="CLOSE_BUTTON_TEXT" value="Close"/>

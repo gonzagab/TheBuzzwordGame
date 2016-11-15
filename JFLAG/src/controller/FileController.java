@@ -11,8 +11,6 @@ public interface FileController {
 
     void handleSaveRequest() throws IOException;
 
-    void handleLoadRequest() throws IOException;
-
     void handleExitRequest();
 
 	void handleLoginRequest();

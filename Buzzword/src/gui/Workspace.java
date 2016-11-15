@@ -3,25 +3,24 @@ package gui;
 import apptemplate.AppTemplate;
 import components.AppWorkspaceComponent;
 import controller.BuzzwordController;
+import gamelogic.GameModes;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import propertymanager.PropertyManager;
 import ui.AppGUI;
 
+import static gamelogic.GameModes.*;
 import static gui.BuzzwordProperties.*;
 
 /**
@@ -50,32 +49,40 @@ public class Workspace extends AppWorkspaceComponent
 	}
 	public void setupGUI()
 	{
-		//LOGIN AREA
-		Rectangle loginBackground = new Rectangle(350, 200, Paint.valueOf("black"));
-		loginBackground.setOpacity(.5);
-		loginBackground.setVisible(false);		//only set visible when login button is pressed
-		StackPane gridLoginLayover = new StackPane();
 		//SETUP HEADER
 		gameHeader = new Label(propertyManager.getPropertyValue(WORKSPACE_HEADER_LABEL));
 		gui.getAppPane().setTop(gameHeader);
 		gui.getAppPane().setAlignment(gameHeader, Pos.CENTER);
+		//SET UP THE LOGIN AREA AND FIELDS
+		StackPane loginLayoverPane = setupLoginLayoverPane();
+		loginLayoverPane.setPadding(new Insets(30, 0, 0, 50));
 		//SETUP LOGO GRID
 		GridPane logo = setupLogoGrid();
-		gridLoginLayover.getChildren().addAll(logo, loginBackground);
-		gridLoginLayover.setAlignment(loginBackground,Pos.TOP_LEFT);
-		gridLoginLayover.setAlignment(logo,Pos.TOP_LEFT);
-		gridLoginLayover.setPadding(new Insets(30, 0, 0, 50));
-		gui.getAppPane().setCenter(gridLoginLayover);
+		logo.setPadding(new Insets(30, 0, 0, 50));
+		//CREATE A HOME PANE THAT HAS THE LOGO AND AN INVISIBLE LOGIN AREA
+		StackPane homePane = new StackPane(logo, loginLayoverPane);
+		//SET THE HOME PANE IN THE CENTER
+		gui.getAppPane().setCenter(homePane);
 		//INITIALIZE BUTTONS AND OTHER THINGS - EVEN IF NOT ON GUI YET
 		newAccountBttn	= new Button("Create Account");
 		logoutButton	= new Button("Log Out");
+		homeButton		= new Button("Home");
 		gameModeMenu	= new ChoiceBox();
-		gameModeMenu.getItems().addAll("Item 1", "Item 2", "Item 3");
 	}
 	public void setupHandlers()
 	{
 		BuzzwordController controller = (BuzzwordController)gui.getFileController();
-		newAccountBttn.setOnMouseClicked(e -> controller.makeNewAccount());
+		newAccountBttn.setOnAction(e -> controller.makeNewAccount());
+		logoutButton.setOnAction(e -> controller.handleLogoutRequest());
+		//ADD A LISTENER TO THE DROP DOWN MENU
+		gameModeMenu.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
+		{
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
+			{
+				controller.handleLevelSelect(newValue.intValue());
+			}
+		});
 	}
     @Override
     public void initStyle()
@@ -118,9 +125,8 @@ public class Workspace extends AppWorkspaceComponent
 	public void setupNewProfileGUI()
 	{
 		//GET PANE TO WORK IN
-		Pane workspace = (Pane) gui.getAppPane().getCenter();
 		GridPane layout = new GridPane();
-		workspace.getChildren().setAll(layout);
+		gui.getAppPane().setCenter(layout);
 		//SET UP TEXT FIELDS
 		TextField nameInput = new TextField();
 		TextField passwordInput = new TextField();
@@ -139,36 +145,106 @@ public class Workspace extends AppWorkspaceComponent
 		layout.add(nameInput, 0, 0);
 		layout.add(passwordInput, 0, 1);
 		layout.add(newAccountBttn, 0, 2);
-		layout.setAlignment(Pos.CENTER);
 	}
 	public void setupLoggedInHomeGUI()
 	{
 		//SETUP SIDEBAR
-		VBox sidbarPane = gui.getSidebarPane();
+		VBox sidebarPane = gui.getSidebarPane();
 		//SETUP USER LABEL
 		Rectangle userLabel = new Rectangle(150, 30);
 		userLabel.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));
 		//STYLE LOG OUT BUTTON
 		logoutButton.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));
+		logoutButton.setMinSize(150, 30);
 		//ADD IT ALL TO THE SIDEBAR
-		sidbarPane.getChildren().setAll(userLabel, gameModeMenu, logoutButton);
+		sidebarPane.getChildren().setAll(userLabel, gameModeMenu, logoutButton);
+		//SETUP DROP DOWN MENU FOR GAME MODE
+		gameModeMenu.getItems().setAll(FAMOUS_PEOPLE.getVal(),
+				ENGLISH_DICTIONARY.getVal(), PLACES.getVal(), SCIENCE.getVal());
+		gameModeMenu.setValue(SCIENCE.getVal());
+		gameModeMenu.setTooltip(new Tooltip(propertyManager.getPropertyValue(GAME_MODE_MENU_TOOLTIP)));
+		//CLEAR GUI WORKSPACE
+		//gui.getAppPane().getCenter().
 	}
-	public void activateLoginScreen()
+	public void activateLoginScreen(boolean visible)
 	{
 		StackPane gridlayover = (StackPane)gui.getAppPane().getCenter();
-		gridlayover.getChildren().get(1).setVisible(true);
-		VBox loginFields = new VBox();
+		gridlayover.getChildren().get(1).setVisible(visible);
+	}
+	public void ensureHomeScreen()
+	{
+		StackPane loginLayoverPane = setupLoginLayoverPane();
+		loginLayoverPane.setPadding(new Insets(30, 0, 0, 50));
+		//SETUP LOGO GRID
+		GridPane logo = setupLogoGrid();
+		logo.setPadding(new Insets(30, 0, 0, 50));
+		//CREATE A HOME PANE THAT HAS THE LOGO AND AN INVISIBLE LOGIN AREA
+		StackPane homePane = new StackPane(logo, loginLayoverPane);
+		//SET THE HOME PANE IN THE CENTER
+		gui.getAppPane().setCenter(homePane);
+	}
+	public StackPane setupLoginLayoverPane()
+	{
+		//STACK PANE FOR LOGIN AREA AND FIELDS
+		StackPane loginLayoverPane = new StackPane();
+		//LOGIN AREA
+		Rectangle loginBackground = new Rectangle(325, 150, Paint.valueOf("black"));
+		loginBackground.setOpacity(.8);
+		//GRID PANE FOR FIELDS AND LABELS
+		GridPane loginFields = new GridPane();
+		//SETUP TEXT FIELD LABELS AND STYLE THEM
+		Label name = new Label("Username");
+		Label passwrd = new Label("Password");
+		name.getStyleClass().setAll(propertyManager.getPropertyValue(LABEL_STYLE));
+		passwrd.getStyleClass().setAll(propertyManager.getPropertyValue(LABEL_STYLE));
 		//SETUP TEXT FIELDS
 		TextField username = new TextField();
 		TextField password = new TextField();
+		//STYLE TEXT FIELDS
+		username.getStyleClass().setAll(propertyManager.getPropertyValue(TEXTFIELD_STYLE));
+		password.getStyleClass().setAll(propertyManager.getPropertyValue(TEXTFIELD_STYLE));
 		username.setMaxSize(150, 30);
 		password.setMaxSize(150, 30);
-		username.setPromptText("Username");
-		password.setPromptText("Password");
-		//ADD FIELDS TO VBOX
-		loginFields.getChildren().addAll(username, password);
-		//SET PADDING FOR VBOX
+		//ADD FIELDS TO GRID PANE
+		loginFields.add(name	, 0, 0);
+		loginFields.add(passwrd	, 0, 1);
+		loginFields.add(username, 1, 0);
+		loginFields.add(password, 1, 1);
+		//SET PADDING FOR GRID PANE
 		loginFields.setPadding(new Insets(30));
-		gridlayover.getChildren().add(loginFields);
+		loginFields.setVgap(20);
+		loginFields.setHgap(10);
+		//LETS ADD THE FIELDS TO THE STACK PANE
+		loginLayoverPane.getChildren().addAll(loginBackground, loginFields);
+		loginLayoverPane.setAlignment(loginBackground, Pos.TOP_LEFT);
+		loginLayoverPane.setVisible(false);
+		return loginLayoverPane;		//return finished invisible pane
+	}
+	public void loadGUIforMode(GameModes mode, int totalLevels, int levelsCompleted)
+	{
+		//SETUP SUB HEADER
+		Label subTitle = new Label(mode.getVal());
+		//CREATE LEVEL FLOE PANE
+		FlowPane levelDisplayPane = new FlowPane();
+		StackPane gridPiece;
+		Circle container;
+		Text number;
+
+		for(int j = 0; j < totalLevels; j++)
+		{
+			//LEVEL BUBBLE GRAPHIC
+			if(j <= levelsCompleted)
+				container = new Circle(30, Paint.valueOf("white"));
+			else
+				container = new Circle(30, Paint.valueOf("grey"));
+			number = new Text(String.valueOf(j));
+			number.getStyleClass().setAll(propertyManager.getPropertyValue(LETTER_STYLE));
+			gridPiece = new StackPane(container, number);
+			//ADD TO PANE
+			levelDisplayPane.getChildren().add(gridPiece);
+			levelDisplayPane.setMargin(gridPiece, new Insets(10));
+		}
+		VBox levelSelectPane = new VBox(subTitle, levelDisplayPane);
+		gui.getAppPane().setCenter(levelSelectPane);
 	}
 }

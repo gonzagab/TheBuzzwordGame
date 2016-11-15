@@ -109,11 +109,6 @@ public class AppFileController implements FileController
     }
 	public void handleLoginRequest()
 	{}
-    @Override
-    public void handleLoadRequest()
-    {
-
-    }
     
     /**
      * A helper method to save work. It saves the work, marks the current work file as saved, notifies the user, and
