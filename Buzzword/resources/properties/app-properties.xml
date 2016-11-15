@@ -20,9 +20,10 @@
         <property name="HEADING_LABEL" value="heading-label"/>
         <property name="BUTTON_STYLE" value="button-style"/>
         <property name="LETTER_STYLE" value="letter-style"/>
-        <property name="SEGMENTED_BUTTON_BAR" value="segmented-button-bar"/>
         <property name="TEXTFIELD_STYLE" value="textfield-style"/>
         <property name="LABEL_STYLE" value="label-style"/>
+        <property name="USERNAME_HOLDER_STYLE" value="username-holder-style"/>
+        <property name="SUB_HEADER_STYLE" value="sub-header-style"/>
 
         <!-- LABELS FOR BUTTONS -->
         <property name="LOGIN_BUTTON_LABEL" value="Log In"/>

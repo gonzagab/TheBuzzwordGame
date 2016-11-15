@@ -4,6 +4,9 @@ import apptemplate.AppTemplate;
 import components.AppWorkspaceComponent;
 import controller.BuzzwordController;
 import gamelogic.GameModes;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -16,7 +19,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 import propertymanager.PropertyManager;
 import ui.AppGUI;
 
@@ -37,6 +40,9 @@ public class Workspace extends AppWorkspaceComponent
 	Button		startPlayingButton;	//Button to start playing a level
 	Button		homeButton;			//Sends the user home
 	ChoiceBox<String>	gameModeMenu;		//Holds all the modes of the game
+	Rectangle	userLabel;
+	Label 		subTitle;			//Sub header for mode
+	int count;
 	//Property Manager
 	PropertyManager propertyManager = PropertyManager.getManager();
 
@@ -46,6 +52,7 @@ public class Workspace extends AppWorkspaceComponent
 		gui = app.getGUI();
 		setupGUI();
 		setupHandlers();
+		count = 60;
 	}
 	public void setupGUI()
 	{
@@ -68,6 +75,7 @@ public class Workspace extends AppWorkspaceComponent
 		logoutButton	= new Button("Log Out");
 		homeButton		= new Button("Home");
 		gameModeMenu	= new ChoiceBox();
+		userLabel = new Rectangle(150, 30);
 	}
 	public void setupHandlers()
 	{
@@ -87,11 +95,18 @@ public class Workspace extends AppWorkspaceComponent
     @Override
     public void initStyle()
     {
+		//BUTTON STYLE SETUP
         ObservableList<Node> sidebarChildren = gui.getSidebarPane().getChildren();
-        sidebarChildren.get(0).getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));
-        sidebarChildren.get(1).getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));
-		sidebarChildren.get(2).getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));
-
+        sidebarChildren.get(0).getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));	//Login Button
+        sidebarChildren.get(1).getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));	//New Account Btn
+		sidebarChildren.get(2).getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));	//Close Button
+		logoutButton.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));		//Log Out Button
+		newAccountBttn.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));		//Create Account btn
+		homeButton.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));
+		//SETUP SIZE
+		homeButton.setMinWidth(150);
+		homeButton.setAlignment(Pos.CENTER);
+		//HEADER STYLE SETUP
         gameHeader.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
     }
     @Override
@@ -137,7 +152,6 @@ public class Workspace extends AppWorkspaceComponent
 		layout.setPadding(new Insets(50));
 		layout.setVgap(20);
 		//SETUP BUTTON STYLE AND SIZE
-		newAccountBttn.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));
 		newAccountBttn.setAlignment(Pos.CENTER);
 		newAccountBttn.setMinWidth(150);
 		newAccountBttn.setMaxWidth(155);
@@ -151,11 +165,11 @@ public class Workspace extends AppWorkspaceComponent
 		//SETUP SIDEBAR
 		VBox sidebarPane = gui.getSidebarPane();
 		//SETUP USER LABEL
-		Rectangle userLabel = new Rectangle(150, 30);
-		userLabel.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));
-		//STYLE LOG OUT BUTTON
-		logoutButton.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));
-		logoutButton.setMinSize(150, 30);
+		userLabel.getStyleClass().setAll(propertyManager.getPropertyValue(USERNAME_HOLDER_STYLE));
+		//STYLE LOG OUT BUTTON; SETUP BUTTON STYLE AND SIZE
+		logoutButton.setAlignment(Pos.CENTER);
+		logoutButton.setMinWidth(150);
+		logoutButton.setMaxWidth(155);
 		//ADD IT ALL TO THE SIDEBAR
 		sidebarPane.getChildren().setAll(userLabel, gameModeMenu, logoutButton);
 		//SETUP DROP DOWN MENU FOR GAME MODE
@@ -163,8 +177,6 @@ public class Workspace extends AppWorkspaceComponent
 				ENGLISH_DICTIONARY.getVal(), PLACES.getVal(), SCIENCE.getVal());
 		gameModeMenu.setValue(SCIENCE.getVal());
 		gameModeMenu.setTooltip(new Tooltip(propertyManager.getPropertyValue(GAME_MODE_MENU_TOOLTIP)));
-		//CLEAR GUI WORKSPACE
-		//gui.getAppPane().getCenter().
 	}
 	public void activateLoginScreen(boolean visible)
 	{
@@ -223,8 +235,9 @@ public class Workspace extends AppWorkspaceComponent
 	public void loadGUIforMode(GameModes mode, int totalLevels, int levelsCompleted)
 	{
 		//SETUP SUB HEADER
-		Label subTitle = new Label(mode.getVal());
-		//CREATE LEVEL FLOE PANE
+		subTitle = new Label(mode.getVal());
+		subTitle.getStyleClass().setAll(propertyManager.getPropertyValue(SUB_HEADER_STYLE));
+		//CREATE LEVEL FLOW PANE
 		FlowPane levelDisplayPane = new FlowPane();
 		StackPane gridPiece;
 		Circle container;
@@ -241,10 +254,77 @@ public class Workspace extends AppWorkspaceComponent
 			number.getStyleClass().setAll(propertyManager.getPropertyValue(LETTER_STYLE));
 			gridPiece = new StackPane(container, number);
 			//ADD TO PANE
+			if(j <= levelsCompleted)
+			{
+				int finalJ = j;
+				gridPiece.setOnMouseClicked(event -> loadGameLevelGUI(finalJ, mode));
+			}
 			levelDisplayPane.getChildren().add(gridPiece);
 			levelDisplayPane.setMargin(gridPiece, new Insets(10));
 		}
 		VBox levelSelectPane = new VBox(subTitle, levelDisplayPane);
 		gui.getAppPane().setCenter(levelSelectPane);
+	}
+	public void loadGameLevelGUI(int level, GameModes mode)
+	{
+		//SETUP SIDEBAR
+		gui.getSidebarPane().getChildren().setAll(userLabel, homeButton);
+		//SETUP HEADER
+		subTitle = new Label(mode.getVal());
+		subTitle.getStyleClass().setAll(propertyManager.getPropertyValue(SUB_HEADER_STYLE));
+		//SETUP PLAY GRID GUI
+		GridPane playGrid = gridLevelSetup();
+		playGrid.setPadding(new Insets(30, 0, 0, 50));
+		//SETUP LEVEL LABEL
+		Label levelLabel = new Label();
+		levelLabel.setText("Level " + level);
+		levelLabel.getStyleClass().setAll(propertyManager.getPropertyValue(SUB_HEADER_STYLE));
+		//PLAY BUTTON
+		//ADD IT ALL TO THE VBOX
+		VBox centerPane = new VBox(subTitle, playGrid, levelLabel);
+		//SETUP CENTER PANE
+		gui.getAppPane().setCenter(centerPane);
+		//SETUP TEXT FOR THE COUNT
+		Text countText = new Text();
+		//SETUP TIME COUNT
+		Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> doSomething(countText)));
+		timeline.setCycleCount(60);
+		timeline.play();
+		//SETUP WORD SELECT
+		//SETUP FOUND WORDS AREA
+		//SETUP TARGET DISPLAY
+		Text targetText = new Text("Target\n75points");
+		//VBOX FOR RIGHT PANE
+		VBox rightPane = new VBox(countText, targetText);
+		gui.getAppPane().setRight(rightPane);
+	}
+	public GridPane gridLevelSetup()
+	{
+		GridPane gridGame = new GridPane();
+		StackPane gridPiece;
+		Circle container;
+		Text[][] letter = {
+				{new Text("R"), new Text("U"), new Text("A"), new Text("E")},
+				{new Text("C"), new Text("Z"), new Text("M"), new Text("L")},
+				{new Text("A"), new Text("O"), new Text("W"), new Text("O")},
+				{new Text("G"), new Text("T"), new Text("E"), new Text("M")}};
+		for(int i = 0; i<4; i++)
+		{
+			for(int j = 0; j < 4; j++)
+			{
+				container = new Circle(30, Paint.valueOf("white"));
+				letter[j][i].getStyleClass().setAll(propertyManager.getPropertyValue(LETTER_STYLE));
+				letter[j][i].setVisible(false);
+				gridPiece = new StackPane(container, letter[j][i]);
+				gridGame.add(gridPiece, i, j);
+				gridGame.setMargin(gridPiece, new Insets(10));
+			}
+		}
+		return gridGame;
+	}
+	public void doSomething(Text countText)
+	{
+		countText.setText("Time Remaining: " +count+" seconds");
+		count--;
 	}
 }

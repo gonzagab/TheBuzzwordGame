@@ -33,7 +33,6 @@
     -fx-opacity: .4;
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.4) , 5, 0.0 , 0 , 1 );
 }
-
 .button-style:pressed
 {
     -fx-background-color:
@@ -41,16 +40,34 @@
         rgb(55, 20, 20),
         linear-gradient(to top, white 2%, grey 98%);
 }
-
 .textfield-style
 {
     -fx-border-style: hidden hidden solid hidden;
     -fx-border-width: 2px;
     -fx-border-color: white;
     -fx-text-fill: white;
-
+}
+.sub-header-style
+{
+    -fx-font-size: 18pt;
+    -fx-font-family: "Segoe UI Light";
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-opacity: 1;
+    -fx-underline: true;
 }
 
+
+.username-holder-style
+{
+    -fx-background-color: white;
+    -fx-background-radius: 50;
+    -fx-background-insets: 0,1,2,3,0;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-opacity: .4;
+}
 #background {
     -light-black: rgb(74, 75, 78);
     -dark-highlight: rgb(87, 89, 92);
