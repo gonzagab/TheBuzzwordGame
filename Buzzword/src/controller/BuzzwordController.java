@@ -1,16 +1,13 @@
 package controller;
 
 import apptemplate.AppTemplate;
-import gamelogic.GameModes;
 import gui.Workspace;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.layout.VBox;
 import ui.AppGUI;
 
 import java.io.IOException;
 
-import static gamelogic.GameModes.*;
+import static gamelogic.GameMode.*;
 
 /**
  * Created by Bryant Gonzaga on 11/14/2016.
@@ -18,17 +15,18 @@ import static gamelogic.GameModes.*;
 public class BuzzwordController implements FileController
 {
 	private AppTemplate app;			//reference to the app
-	//private Workspace	guiWorkspace;	//Workspace reference
+	private boolean		isPlaying;		//Indicates if a game is currently being played
 
 	public BuzzwordController(AppTemplate app)
 	{
 		this.app = app;
+		isPlaying = false;
 	}
 	@Override
 	public void handleNewRequest()
 	{
 		Workspace guiWorkspace = (Workspace)app.getWorkspaceComponent();
-		guiWorkspace.setupNewProfileGUI();
+		guiWorkspace.loadNewProfileGUI();
 	}
 	@Override
 	public void handleSaveRequest() throws IOException
@@ -59,7 +57,7 @@ public class BuzzwordController implements FileController
 		try
 		{
 			guiWorkspace.activateLoginScreen(false);
-			guiWorkspace.setupLoggedInHomeGUI();
+			guiWorkspace.loadLoggedInHomeGUI();
 		}
 		catch(Exception ex)
 		{
@@ -81,12 +79,18 @@ public class BuzzwordController implements FileController
 		AppGUI gui = app.getGUI();
 
 		if(selected == 0)
-			((Workspace)app.getWorkspaceComponent()).loadGUIforMode(FAMOUS_PEOPLE, 10, 1);
+			((Workspace)app.getWorkspaceComponent()).loadModeSelectorGUI(FAMOUS_PEOPLE, 10, 1);
 		else if(selected == 1)
-			((Workspace)app.getWorkspaceComponent()).loadGUIforMode(ENGLISH_DICTIONARY, 10, 2);
+			((Workspace)app.getWorkspaceComponent()).loadModeSelectorGUI(ENGLISH_DICTIONARY, 10, 2);
 		else if(selected == 2)
-			((Workspace)app.getWorkspaceComponent()).loadGUIforMode(PLACES, 10, 4);
+			((Workspace)app.getWorkspaceComponent()).loadModeSelectorGUI(PLACES, 10, 4);
 		else if(selected == 3)
-			((Workspace)app.getWorkspaceComponent()).loadGUIforMode(SCIENCE, 10, 7);
+			((Workspace)app.getWorkspaceComponent()).loadModeSelectorGUI(SCIENCE, 10, 7);
+	}
+	public void play()
+	{
+		Workspace guiWorkspace = (Workspace)app.getWorkspaceComponent();
+		isPlaying = !isPlaying;
+		guiWorkspace.isPlayingSetup(isPlaying);
 	}
 }

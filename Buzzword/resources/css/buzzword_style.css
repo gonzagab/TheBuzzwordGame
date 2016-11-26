@@ -22,24 +22,6 @@
     -fx-font-weight: bold;
     -fx-opacity: 1;
 }
-.button-style
-{
-    -fx-background-color: white;
-    -fx-background-radius: 25;
-    -fx-background-insets: 0,1,2,3,0;
-    -fx-text-fill: black;
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-opacity: .4;
-    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.4) , 5, 0.0 , 0 , 1 );
-}
-.button-style:pressed
-{
-    -fx-background-color:
-        white,
-        rgb(55, 20, 20),
-        linear-gradient(to top, white 2%, grey 98%);
-}
 .textfield-style
 {
     -fx-border-style: hidden hidden solid hidden;
@@ -56,8 +38,10 @@
     -fx-opacity: 1;
     -fx-underline: true;
 }
-
-
+.background-style
+{
+    -fx-background-color: linear-gradient(to right, #ADB0AB 20% , #D8D8D8 10%);
+}
 .username-holder-style
 {
     -fx-background-color: white;
@@ -68,6 +52,63 @@
     -fx-font-size: 14px;
     -fx-opacity: .4;
 }
+/*****************************************
+*************BUTTON STYLES****************
+******************************************/
+.button-style
+{
+    -fx-background-color: white;
+    -fx-background-radius: 25;
+    -fx-background-insets: 0,1,2,3,0;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-opacity: .4;
+    -fx-min-width: 150px;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.4) , 5, 0.0 , 0 , 1 );
+}
+.button-style:pressed
+{
+    -fx-background-color:
+        white,
+        rgb(55, 20, 20),
+        linear-gradient(to top, white 2%, grey 98%);
+}
+.play-button
+ {
+    -fx-background-image: url(images/playButtonImage.jpg);
+    -fx-background-position: center;
+    -fx-background-repeat: stretch;
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+    -fx-background-padding: 10px;
+    -fx-min-width: 70px;
+    -fx-min-height: 50px;
+    -fx-border-radius: 80px;
+}
+.pause-button
+ {
+    -fx-background-image: url(images/pauseButtonImage.jpg);
+    -fx-background-position: center;
+    -fx-background-repeat: stretch;
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+    -fx-background-padding: 10px;
+    -fx-min-width: 70px;
+    -fx-min-height: 50px;
+    -fx-border-radius: 80px;
+}
+.play-button:pressed
+ {
+    -fx-background-image: url(images/playButtonImagePressed.jpg);
+    -fx-border-width: 4px;
+}
+.pause-button:pressed
+ {
+    -fx-background-image: url(images/pauseButtonImagePressed.jpg);
+    -fx-border-width: 4px;
+}
+
 #background {
     -light-black: rgb(74, 75, 78);
     -dark-highlight: rgb(87, 89, 92);

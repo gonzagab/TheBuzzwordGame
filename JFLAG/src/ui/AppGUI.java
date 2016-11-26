@@ -13,8 +13,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import propertymanager.PropertyManager;
@@ -41,16 +39,16 @@ import static settings.InitializationParameters.APP_IMAGEDIR_PATH;
  */
 public class AppGUI implements AppStyleArbiter {
 
-    protected FileController fileController;   // to react to file-related controls
-    protected Stage          primaryStage;     // the application window
-    protected Scene          primaryScene;     // the scene graph
-    protected BorderPane     appPane;          // the root node in the scene graph, to organize the containers
-    protected VBox           sidebarPane;      // the side bar that holds buttons
-    protected StackPane      backgroundPane;	// holds the app's background
-    protected Button         newButton;        // button to create a new profile
-    protected Button         loginButton;       // button to log into an already existing account
-    protected Button         closeButton;       // button to exit application
-    protected String         applicationTitle; // the application title
+    protected FileController	fileController;   // to react to file-related controls
+    protected Stage          	primaryStage;     // the application window
+    protected Scene         	primaryScene;     // the scene graph
+    protected BorderPane		appPane;          // the root node in the scene graph, to organize the containers
+    protected VBox  			sidebarPane;      // the side bar that holds buttons
+    protected Button 			newButton;        // button to create a new profile
+    protected Button         	loginButton;       // button to log into an already existing account
+    protected Button         	closeButton;		//button to exit application
+    protected String         	applicationTitle;	//the application title
+	protected StackPane			backgroundPane;		//background pane
 
     private int appSpecificWindowWidth;  // optional parameter for window width that can be set by the application
     private int appSpecificWindowHeight; // optional parameter for window height that can be set by the application
@@ -78,33 +76,18 @@ public class AppGUI implements AppStyleArbiter {
         initializeToolbarHandlers(appTemplate); // set the toolbar button handlers
         initializeWindow();                     // start the app window (without the application-specific workspace)
     }
-    public VBox getSidebarPane()
-    { return sidebarPane; }
-    public BorderPane getAppPane()
-    { return appPane; }
+	public void updateWorkspaceToolbar(boolean savable)
+	{
+		// saveButton.setDisable(!savable);
+		newButton.setDisable(false);
+		closeButton.setDisable(false);
+	}
+    /*/**************************************************************************
+    ***********PRIVATE HELPER METHODS USED FOR INITIALIZING AppGUI***************
+    *****************************************************************************/
     /**
-     * Accessor method for getting this application's primary stage's,
-     * scene.
-     *
-     * @return This application's window's scene.
-     */
-    public Scene getPrimaryScene()
-    { return primaryScene; }
-    /**
-     * Accessor method for getting this application's window,
-     * which is the primary stage within which the full GUI will be placed.
-     *
-     * @return This application's primary stage (i.e. window).
-     */
-    public Stage getWindow()
-    { return primaryStage; }
-
-    /****************************************************************************/
-    /* BELOW ARE ALL THE PRIVATE HELPER METHODS WE USE FOR INITIALIZING OUR AppGUI */
-    /****************************************************************************/
-    /**
-     * This function initializes all the buttons in the toolbar at the top of
-     * the application window. These are related to file management.
+     * This function initializes all the buttons in the sidebar
+     * These are related to file management.
      */
     private void initializeSidebar() throws IOException
     {
@@ -149,18 +132,20 @@ public class AppGUI implements AppStyleArbiter {
 //        });
         closeButton.setOnAction(e -> fileController.handleExitRequest());
     }
-    public void updateWorkspaceToolbar(boolean savable)
-    {
-        // saveButton.setDisable(!savable);
-        newButton.setDisable(false);
-        closeButton.setDisable(false);
-    }
     // INITIALIZE THE WINDOW (i.e. STAGE) PUTTING ALL THE CONTROLS
     // THERE EXCEPT THE WORKSPACE, WHICH WILL BE ADDED THE FIRST
     // TIME A NEW Page IS CREATED OR LOADED
     private void initializeWindow() throws IOException
     {
         PropertyManager propertyManager = PropertyManager.getManager();
+		//INITIALIZE BACKGROUND PANE
+		backgroundPane = new StackPane();
+		//INITIALIZE APP PANE
+		appPane = new BorderPane();
+		//ADD SIDEBAR
+		appPane.setLeft(sidebarPane);
+		//ADD TO BACKGROUND
+		backgroundPane.getChildren().addAll(appPane);
         // SET THE WINDOW TITLE
         primaryStage.setTitle(applicationTitle);
         // GET THE SIZE OF THE SCREEN
@@ -171,20 +156,11 @@ public class AppGUI implements AppStyleArbiter {
         primaryStage.setY(bounds.getMinY());
         primaryStage.setWidth(bounds.getWidth());
         primaryStage.setHeight(bounds.getHeight());
-        // ADD THE TOOLBAR ONLY, NOTE THAT THE WORKSPACE
-        // HAS BEEN CONSTRUCTED, BUT WON'T BE ADDED UNTIL
-        // THE USER STARTS EDITING A COURSE
-        // SET UP BACKGROUND
-        backgroundPane = new StackPane();
-        Rectangle background = new Rectangle(appSpecificWindowWidth, appSpecificWindowHeight, LinearGradient.valueOf("from 0% 100% to 100% 100%, #adb0ab  20% , #D8D8D8 20%,  #D8D8D8 60%"));
-        appPane = new BorderPane();
-        appPane.setLeft(sidebarPane);
-        //PUT EVERYTHING TOGETHER
-        backgroundPane.getChildren().addAll(background, appPane);
+		//INITIALIZE THE PRIMARY SCENE
         primaryScene = appSpecificWindowWidth < 1 || appSpecificWindowHeight < 1
                 ?new Scene(backgroundPane)
                 :new Scene(backgroundPane, appSpecificWindowWidth, appSpecificWindowHeight);
-
+		//SETUP THE APP IMAGE
         URL imgDirURL = AppTemplate.class.getClassLoader().getResource(APP_IMAGEDIR_PATH.getParameter());
         if (imgDirURL == null)
             throw new FileNotFoundException("Image resources folder does not exist.");
@@ -194,7 +170,6 @@ public class AppGUI implements AppStyleArbiter {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
         primaryStage.setScene(primaryScene);
         primaryStage.sizeToScene();
         primaryStage.show();
@@ -210,14 +185,11 @@ public class AppGUI implements AppStyleArbiter {
      * @return A constructed, fully initialized button placed into its appropriate
      * pane container.
      */
-    public Button initializeChildButton(Pane toolbarPane, String label, String tooltip, boolean disabled) throws IOException
+    private Button initializeChildButton(Pane toolbarPane, String label, String tooltip, boolean disabled) throws IOException
     {
         //ADD LABEL
         PropertyManager propertyManager = PropertyManager.getManager();
         Button button = new Button(propertyManager.getPropertyValue(label));
-		//SET THE BUTTONS SIZE
-		button.setMaxWidth(155);
-		button.setMinWidth(150);
         //SET UP DISABLE
         button.setDisable(disabled);
         //ADD TOOLTIP
@@ -228,15 +200,38 @@ public class AppGUI implements AppStyleArbiter {
         //AND FINALLY RETURN
         return button;
     }
-    /**
-     * This function specifies the CSS style classes for the controls managed
-     * by this framework.
-     */
-    @Override
-    public void initStyle()
-    {
-        // currently, we do not provide any stylization at the framework-level
-    }
-    public FileController getFileController()
-    {return fileController;}
+	@Override
+	public void initStyle()
+	{
+		// currently, we do not provide any stylization at the framework-level
+	}
+	/*/********************************************************
+	 ***************** GETTER METHODS *************************
+	 **********************************************************/
+	public VBox getSidebarPane()
+	{ return sidebarPane; }
+	public BorderPane getAppPane()
+	{ return appPane; }
+	/**
+	 * Accessor method for getting this application's primary stage's,
+	 * scene.
+	 *
+	 * @return This application's window's scene.
+	 */
+	public Scene getPrimaryScene()
+	{ return primaryScene; }
+	/**
+	 * Accessor method for getting this application's window,
+	 * which is the primary stage within which the full GUI will be placed.
+	 *
+	 * @return This application's primary stage (i.e. window).
+	 */
+	public Stage getWindow()
+	{ return primaryStage; }
+	/**
+	 * This function specifies the CSS style classes for the controls managed
+	 * by this framework.
+	 */
+	public FileController getFileController()
+	{return fileController;}
 }

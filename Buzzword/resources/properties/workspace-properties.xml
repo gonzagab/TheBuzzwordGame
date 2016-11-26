@@ -6,35 +6,36 @@
 -->
 <properties>
     <property_list>
-        <!-- PROGRAM ICON FILES -->
-        <property name="ADD_ICON" value="Add.png"/>
-        <property name="REMOVE_ICON" value="Remove.png"/>
-        <property name="MOVE_UP_ICON" value="MoveUp.png"/>
-        <property name="MOVE_DOWN_ICON" value="MoveDown.png"/>
-
+        <!-- WORKSPACE CSS PROPERTIES -->
+        <property name="HEADING_LABEL"      value="heading-label"/>
+        <property name="BUTTON_STYLE"       value="button-style"/>
+        <property name="LETTER_STYLE"       value="letter-style"/>
+        <property name="TEXTFIELD_STYLE"    value="textfield-style"/>
+        <property name="LABEL_STYLE"        value="label-style"/>
+        <property name="USERNAME_HOLDER_STYLE" value="username-holder-style"/>
+        <property name="SUB_HEADER_STYLE"   value="sub-header-style"/>
+        <!-- BUTTON STYLE CSS -->
+        <property name="BACKGROUND_STYLE"   value="background-style"/>
+        <property name="PLAY_BUTTON"        value="play-button"/>
+        <property name="PAUSE_BUTTON"       value="pause-button"/>
         <!-- TOOLTIPS FOR BUTTONS -->
         <property name="ADD_ITEM_TOOLTIP" value="Select Background Color"/>
         <property name="REMOVE_ITEM_TOOLTIP" value="Select Fill Color"/>
         <property name="MOVE_UP_ITEM_TOOLTIP" value="Select Outline Color"/>
         <property name="MOVE_DOWN_ITEM_TOOLTIP" value="Take Snapshot"/>
-
         <!-- HEADINGS AND PROMPTS -->
         <property name="WORKSPACE_HEADER_LABEL" value="!! BUZZWORD !!"/>
-
         <!-- TABLE COLUMN HEADINGS -->
         <property name="CATEGORY_COLUMN_HEADING" value="Category"/>
         <property name="DESCRIPTION_COLUMN_HEADING" value="Description"/>
         <property name="START_DATE_COLUMN_HEADING" value="Start Date"/>
         <property name="END_DATE_COLUMN_HEADING" value="End Date"/>
         <property name="COMPLETED_COLUMN_HEADING" value="Completed"/>
-
-
         <!-- ERROR MESSAGES AND TITLES FOR THEIR DIALOGS -->
         <property name="ATTRIBUTE_UPDATE_ERROR_MESSAGE" value="WARNING: An error occurred updating the element's attribute."/>
         <property name="ATTRIBUTE_UPDATE_ERROR_TITLE" value="Attribute Update Error"/>
         <property name="UPDATE_ERROR_MESSAGE" value="An error occurred updating the UI"/>
         <property name="UPDATE_ERROR_TITLE" value="UI Update Error"/>
-
     </property_list>
     <property_options_list>
     </property_options_list>

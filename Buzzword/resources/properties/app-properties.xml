@@ -16,26 +16,22 @@
         <property name="APP_CSS" value="buzzword_style.css"/>
         <property name="APP_SAVED_GAMES_PATH" value="Saved Games"/>
 
-        <!-- WORKSPACE CSS PROPERTIES -->
-        <property name="HEADING_LABEL" value="heading-label"/>
-        <property name="BUTTON_STYLE" value="button-style"/>
-        <property name="LETTER_STYLE" value="letter-style"/>
-        <property name="TEXTFIELD_STYLE" value="textfield-style"/>
-        <property name="LABEL_STYLE" value="label-style"/>
-        <property name="USERNAME_HOLDER_STYLE" value="username-holder-style"/>
-        <property name="SUB_HEADER_STYLE" value="sub-header-style"/>
-
         <!-- LABELS FOR BUTTONS -->
         <property name="LOGIN_BUTTON_LABEL" value="Log In"/>
         <property name="NEW_BUTTON_LABEL" value="Create New Profile"/>
         <property name="EXIT_BUTTON_LABEL" value="Close Application"/>
 
         <!-- TOOLTIPS FOR BUTTONS -->
-        <property name="LOGIN_TOOLTIP" value="Login To Your Account"/>
-        <property name="NEW_TOOLTIP" value="Create A New Profile"/>
-        <property name="LOAD_TOOLTIP" value="Load a saved game"/>
-        <property name="SAVE_TOOLTIP" value="Save game"/>
-        <property name="EXIT_TOOLTIP" value="Exit application"/>
+        <property name="LOGIN_TOOLTIP"       value="Login To Your Account"/>
+        <property name="NEW_TOOLTIP"         value="Create A New Profile"/>
+        <property name="LOAD_TOOLTIP"        value="Load a Saved Game"/>
+        <property name="SAVE_TOOLTIP"        value="Save Game"/>
+        <property name="EXIT_TOOLTIP"        value="Exit Application"/>
+        <property name="USERNAME_TOOLTIP"    value="Enter Username"/>
+        <property name="PASSWORD_TOOLTIP"    value="Enter Password"/>
+        <property name="LOGOUT_TOOLTIP"      value="Log Out"/>
+        <property name="NEW_ACCOUNT_TOOLTIP" value="Create New Account"/>
+        <property name="HOME_TOOLTIP"        value="Return Home"/>
 
         <!-- TOOLTIPS FOR DROP DOWN MENU -->
         <property name="GAME_MODE_MENU_TOOLTIP" value="Choose a Game Mode"/>
