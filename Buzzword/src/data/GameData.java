@@ -4,10 +4,16 @@ import components.AppDataComponent;
 import gamelogic.GameMode;
 import gamelogic.LetterNode;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Created by Bryant Gonzaga on 11/13/2016.
@@ -27,6 +33,8 @@ public class GameData implements AppDataComponent
 	public GameData()
 	{
 		goodWords = new HashSet<>();
+		initPlayingGrid();
+
 /*
 		playingGrid = new char[]
 		{
@@ -53,6 +61,94 @@ public class GameData implements AppDataComponent
 		URL wordsResource = getClass().getClassLoader()
 				.getResource("words/" + currentMode.getFolder() + "/" + integerToString(currentLevel) + ".txt");
 		assert wordsResource != null;
+		//VARIABLES TO HELP PLACE WORD
+		boolean letterPlaced;
+		String word = "HOWDY";
+		boolean visited;
+		int toSkip;
+		int offset;
+		int nodePos;
+		int[] visitedNode = new int[currentLevel + 4];
+		int[] offsetVal = {-4, -3, 1, 5, 4, 3, -1, -5};
+
+		for(int manyWords = 0; manyWords < 3; manyWords++)
+		{
+			for(int i = 0; i < visitedNode.length; i++)
+				visitedNode[i] = -1;
+			toSkip = new Random().nextInt(TOTAL_NUMBER_OF_STORED_WORDS);
+			try(Stream<String> lines = Files.lines(Paths.get(wordsResource.toURI())))
+			{
+				word = lines.skip(toSkip).findFirst().get();
+				word = word.toUpperCase();
+			}catch(IOException | URISyntaxException e)
+			{
+				e.printStackTrace();
+				System.exit(1);
+			}
+			//RANDOMLY START AT A NODE IN GRID
+			nodePos = ((int) (Math.random() * 16));        //range from 0 - 15
+			//PLACE WORD
+			for(int i = 0; i < word.length(); i++)
+			{
+				letterPlaced = false;
+				//GET NEXT NODE POSITION
+				/* FIRST CREATE OFFSET */
+				offset = (int) (Math.random() * 8); //random offset to begin at 0 - 8 adjacent nodes
+				/* THEN CHECK OFFSET NODE */
+				for(int j = 0; j < 7; j++)    //7 because there are 8 adjacent nodes
+				{
+					//CHECK FOR OVERFLOW AND THAT OFFSET IS IN RANGE
+					while(playingGrid.get(nodePos).getAdjecentNode(offset) == null)
+					{
+						offset++;
+						if(offset > 7)
+							offset = 0;
+					}
+					//CHECK THAT NODE HASN'T BEEN VISITED BEFORE
+					visited = false;
+					for(int k = 0; k < i; k++)
+					{
+						if(visitedNode[k] == nodePos + offsetVal[offset])
+						{
+							visited = true;
+							//NEW OFFSET - increment to next node
+							offset++;
+							if(offset > 7)
+								offset = 0;
+							break;            //NO NEED TO CONTINUE LOOKING
+						}
+					}
+					if(!visited)
+					{
+						if(playingGrid.get(nodePos).getAdjecentNode(offset).getLetter() == '-')    //IF EMPTY
+						{
+							j = 10;        //NO NEED TO LOOK INTO OTHER NODES
+							nodePos += offsetVal[offset];
+							letterPlaced = true;
+							visitedNode[i] = nodePos;
+						}
+						else if(playingGrid.get(nodePos).getAdjecentNode(offset).getLetter() == word.charAt(i)) //IF SAME LETTER IS THERE
+						{
+							j = 10;        //NO NEED TO LOOK INTO OTHER NODES
+							nodePos += offsetVal[offset];
+							letterPlaced = true;
+							visitedNode[i] = nodePos;
+						}
+						else            //IF A DIFFERENT LETTER IS THERE
+						{
+							//NEW OFFSET
+							offset++;
+							if(offset > 7)
+								offset = 0;
+						}
+					}
+				}
+				//PLACE LETTER INTO NODE - random beginner node or adjacent node
+				playingGrid.get(nodePos).setLetter(word.charAt(i));
+				visitedNode[i] = nodePos;    //save where letter was placed
+			}
+			System.out.println(word);
+		}
 	}
 /*
 	private void generatePlayingGrid()
@@ -198,8 +294,8 @@ public class GameData implements AppDataComponent
 		return playingGrid;
 	}
 	/*/******************************
-		 *********SETTER METHODS*********
-		 ********************************/
+	 *********SETTER METHODS*********
+	 ********************************/
 	public void setCurrentLevel(int currentLevel)
 	{
 		this.currentLevel = currentLevel;
@@ -243,5 +339,111 @@ public class GameData implements AppDataComponent
 			return "thirteen";
 
 		return "";
+	}
+	private void initPlayingGrid()
+	{
+		playingGrid = new ArrayList<>();
+		for(int i = 0; i<16; i++)
+			playingGrid.add(new LetterNode('-'));
+		//NODE 0
+		playingGrid.get(0).setAdjacentNode(playingGrid.get(1), 2);
+		playingGrid.get(0).setAdjacentNode(playingGrid.get(5), 3);
+		playingGrid.get(0).setAdjacentNode(playingGrid.get(4), 4);
+		//NODE 1
+		playingGrid.get(1).setAdjacentNode(playingGrid.get(2), 2);
+		playingGrid.get(1).setAdjacentNode(playingGrid.get(6), 3);
+		playingGrid.get(1).setAdjacentNode(playingGrid.get(5), 4);
+		playingGrid.get(1).setAdjacentNode(playingGrid.get(4), 5);
+		playingGrid.get(1).setAdjacentNode(playingGrid.get(0), 6);
+		//NODE 2
+		playingGrid.get(2).setAdjacentNode(playingGrid.get(3), 2);
+		playingGrid.get(2).setAdjacentNode(playingGrid.get(7), 3);
+		playingGrid.get(2).setAdjacentNode(playingGrid.get(6), 4);
+		playingGrid.get(2).setAdjacentNode(playingGrid.get(5), 5);
+		playingGrid.get(2).setAdjacentNode(playingGrid.get(1), 6);
+		//NODE 3
+		playingGrid.get(3).setAdjacentNode(playingGrid.get(7), 4);
+		playingGrid.get(3).setAdjacentNode(playingGrid.get(6), 5);
+		playingGrid.get(3).setAdjacentNode(playingGrid.get(2), 6);
+		//NODE 4
+		playingGrid.get(4).setAdjacentNode(playingGrid.get(0), 0);
+		playingGrid.get(4).setAdjacentNode(playingGrid.get(1), 1);
+		playingGrid.get(4).setAdjacentNode(playingGrid.get(5), 2);
+		playingGrid.get(4).setAdjacentNode(playingGrid.get(9), 3);
+		playingGrid.get(4).setAdjacentNode(playingGrid.get(8), 4);
+		//NODE 5
+		playingGrid.get(5).setAdjacentNode(playingGrid.get(1), 0);
+		playingGrid.get(5).setAdjacentNode(playingGrid.get(2), 1);
+		playingGrid.get(5).setAdjacentNode(playingGrid.get(6), 2);
+		playingGrid.get(5).setAdjacentNode(playingGrid.get(10), 3);
+		playingGrid.get(5).setAdjacentNode(playingGrid.get(9), 4);
+		playingGrid.get(5).setAdjacentNode(playingGrid.get(8), 5);
+		playingGrid.get(5).setAdjacentNode(playingGrid.get(4), 6);
+		playingGrid.get(5).setAdjacentNode(playingGrid.get(0), 7);
+		//NODE 6
+		playingGrid.get(6).setAdjacentNode(playingGrid.get(2), 0);
+		playingGrid.get(6).setAdjacentNode(playingGrid.get(3), 1);
+		playingGrid.get(6).setAdjacentNode(playingGrid.get(7), 2);
+		playingGrid.get(6).setAdjacentNode(playingGrid.get(11), 3);
+		playingGrid.get(6).setAdjacentNode(playingGrid.get(10), 4);
+		playingGrid.get(6).setAdjacentNode(playingGrid.get(9), 5);
+		playingGrid.get(6).setAdjacentNode(playingGrid.get(5), 6);
+		playingGrid.get(6).setAdjacentNode(playingGrid.get(1), 7);
+		//NODE 7
+		playingGrid.get(7).setAdjacentNode(playingGrid.get(3), 0);
+		playingGrid.get(7).setAdjacentNode(playingGrid.get(11), 4);
+		playingGrid.get(7).setAdjacentNode(playingGrid.get(10), 5);
+		playingGrid.get(7).setAdjacentNode(playingGrid.get(6), 6);
+		playingGrid.get(7).setAdjacentNode(playingGrid.get(2), 7);
+		//NODE 8
+		playingGrid.get(8).setAdjacentNode(playingGrid.get(4), 0);
+		playingGrid.get(8).setAdjacentNode(playingGrid.get(5), 1);
+		playingGrid.get(8).setAdjacentNode(playingGrid.get(9), 2);
+		playingGrid.get(8).setAdjacentNode(playingGrid.get(13), 3);
+		playingGrid.get(8).setAdjacentNode(playingGrid.get(12), 4);
+		//NODE 9
+		playingGrid.get(9).setAdjacentNode(playingGrid.get(5), 0);
+		playingGrid.get(9).setAdjacentNode(playingGrid.get(6), 1);
+		playingGrid.get(9).setAdjacentNode(playingGrid.get(10), 2);
+		playingGrid.get(9).setAdjacentNode(playingGrid.get(14), 3);
+		playingGrid.get(9).setAdjacentNode(playingGrid.get(13), 4);
+		playingGrid.get(9).setAdjacentNode(playingGrid.get(12), 5);
+		playingGrid.get(9).setAdjacentNode(playingGrid.get(8), 6);
+		playingGrid.get(9).setAdjacentNode(playingGrid.get(4), 7);
+		//NODE 10
+		playingGrid.get(10).setAdjacentNode(playingGrid.get(6), 0);
+		playingGrid.get(10).setAdjacentNode(playingGrid.get(7), 1);
+		playingGrid.get(10).setAdjacentNode(playingGrid.get(11), 2);
+		playingGrid.get(10).setAdjacentNode(playingGrid.get(15), 3);
+		playingGrid.get(10).setAdjacentNode(playingGrid.get(14), 4);
+		playingGrid.get(10).setAdjacentNode(playingGrid.get(13), 5);
+		playingGrid.get(10).setAdjacentNode(playingGrid.get(9), 6);
+		playingGrid.get(10).setAdjacentNode(playingGrid.get(5), 7);
+		//NODE 11
+		playingGrid.get(11).setAdjacentNode(playingGrid.get(7), 0);
+		playingGrid.get(11).setAdjacentNode(playingGrid.get(15), 4);
+		playingGrid.get(11).setAdjacentNode(playingGrid.get(14), 5);
+		playingGrid.get(11).setAdjacentNode(playingGrid.get(10), 6);
+		playingGrid.get(11).setAdjacentNode(playingGrid.get(6), 7);
+		//NODE 12
+		playingGrid.get(12).setAdjacentNode(playingGrid.get(8), 0);
+		playingGrid.get(12).setAdjacentNode(playingGrid.get(9), 1);
+		playingGrid.get(12).setAdjacentNode(playingGrid.get(13), 2);
+		//NODE 13
+		playingGrid.get(13).setAdjacentNode(playingGrid.get(9), 0);
+		playingGrid.get(13).setAdjacentNode(playingGrid.get(10), 1);
+		playingGrid.get(13).setAdjacentNode(playingGrid.get(14), 2);
+		playingGrid.get(13).setAdjacentNode(playingGrid.get(12), 6);
+		playingGrid.get(13).setAdjacentNode(playingGrid.get(8), 7);
+		//NODE 14
+		playingGrid.get(14).setAdjacentNode(playingGrid.get(10), 0);
+		playingGrid.get(14).setAdjacentNode(playingGrid.get(11), 1);
+		playingGrid.get(14).setAdjacentNode(playingGrid.get(15), 2);
+		playingGrid.get(14).setAdjacentNode(playingGrid.get(13), 6);
+		playingGrid.get(14).setAdjacentNode(playingGrid.get(9), 7);
+		//NODE 15
+		playingGrid.get(15).setAdjacentNode(playingGrid.get(11), 0);
+		playingGrid.get(15).setAdjacentNode(playingGrid.get(14), 6);
+		playingGrid.get(15).setAdjacentNode(playingGrid.get(10), 7);
 	}
 }

@@ -360,7 +360,7 @@ public class Workspace extends AppWorkspaceComponent
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				letter[i][j] = new Text(String.valueOf(gridLetters.get(j+i*4)));
+				letter[i][j] = new Text(gridLetters.get(j+i*4).toString());
 				//circle grid
 				container = new Circle(30, Paint.valueOf("white"));
 				circleGrid.add(container, i, j);

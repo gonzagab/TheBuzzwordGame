@@ -14,7 +14,7 @@ public class LetterNode
 	{
 		this('-');
 	}
-	LetterNode(char letter)
+	public LetterNode(char letter)
 	{
 		adjacentNode = new LetterNode[8];
 		this.letter = letter;
@@ -35,13 +35,11 @@ public class LetterNode
 	{
 		return adjacentNode[side];
 	}
-
 	@Override
 	public String toString()
 	{
 		return String.valueOf(letter);
 	}
-
 	/*/*****************************
 		 ********SETTER METHODS*********
 		 *******************************/
