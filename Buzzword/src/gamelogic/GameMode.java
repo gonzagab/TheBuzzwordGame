@@ -5,14 +5,15 @@ package gamelogic;
  */
 public enum GameMode
 {
-	ENGLISH_DICTIONARY("English Dictionary", 1, "englishdictionary"),
-	FAMOUS_PEOPLE("Famous People", 2, "famouspeople"),
-	SCIENCE("Science", 3, "science"),
-	PLACES("Places", 4, "places");
-
+	ENGLISH_DICTIONARY	("English Dictionary", 	1, "englishdictionary"),
+	FAMOUS_PEOPLE		("Famous People", 		2, "famouspeople"),
+	SCIENCE				("Science",		 		3, "science"),
+	PLACES				("Places", 				4, "places");
+	//FIELDS FOR EACH MODE
 	String 	literal;
-	String folder;
+	String 	folder;
 	int 	intVal;
+	int		levels;
 
 	GameMode(String literal, int intVal, String folder)
 	{
@@ -20,15 +21,18 @@ public enum GameMode
 		this.intVal = intVal;
 		this.folder = folder;
 	}
-	public String getLiteral()
+	/*/**********************************
+	 ***********GETTER METHODS***********
+	 ************************************/
+	public String 	getLiteral()
 	{
 		return literal;
 	}
-	public int getIntVal()
+	public int 		getIntVal()
 	{
 		return intVal;
 	}
-	public String getFolder()
+	public String 	getFolder()
 	{
 		return folder;
 	}

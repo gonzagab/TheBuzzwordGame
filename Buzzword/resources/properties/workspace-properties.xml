@@ -12,7 +12,6 @@
         <property name="LETTER_STYLE"       value="letter-style"/>
         <property name="TEXTFIELD_STYLE"    value="textfield-style"/>
         <property name="LABEL_STYLE"        value="label-style"/>
-        <property name="USERNAME_HOLDER_STYLE" value="username-holder-style"/>
         <property name="SUB_HEADER_STYLE"   value="sub-header-style"/>
         <!-- BUTTON STYLE CSS -->
         <property name="BACKGROUND_STYLE"   value="background-style"/>

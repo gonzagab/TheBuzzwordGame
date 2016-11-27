@@ -42,16 +42,6 @@
 {
     -fx-background-color: linear-gradient(to right, #ADB0AB 20% , #D8D8D8 10%);
 }
-.username-holder-style
-{
-    -fx-background-color: white;
-    -fx-background-radius: 50;
-    -fx-background-insets: 0,1,2,3,0;
-    -fx-text-fill: black;
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-opacity: .4;
-}
 /*****************************************
 *************BUTTON STYLES****************
 ******************************************/

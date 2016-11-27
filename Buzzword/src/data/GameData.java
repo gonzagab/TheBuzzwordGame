@@ -3,6 +3,7 @@ package data;
 import components.AppDataComponent;
 import gamelogic.GameMode;
 import gamelogic.LetterNode;
+import gamelogic.UserProfile;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -29,6 +30,7 @@ public class GameData implements AppDataComponent
 	private int			targetScore;		//Score needed to reach to pass level
 	private int			currentScore;		//Score currently at
 	private Set<String> goodWords;
+	private UserProfile	user;				//information of the current player
 
 	public GameData()
 	{
@@ -293,6 +295,10 @@ public class GameData implements AppDataComponent
 	{
 		return playingGrid;
 	}
+	public UserProfile getUser()
+	{
+		return user;
+	}
 	/*/******************************
 	 *********SETTER METHODS*********
 	 ********************************/
@@ -303,6 +309,10 @@ public class GameData implements AppDataComponent
 	public void setCurrentMode(GameMode currentMode)
 	{
 		this.currentMode = currentMode;
+	}
+	public void setUser(UserProfile user)
+	{
+		this.user = user;
 	}
 	/*/******************************
 	 *****PRIVATE HELPER METHODS*****

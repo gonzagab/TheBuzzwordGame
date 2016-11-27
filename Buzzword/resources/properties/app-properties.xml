@@ -46,6 +46,10 @@
         <property name="SAVE_ERROR_MESSAGE" value="An error occurred saving game"/>
         <property name="PROPERTIES_LOAD_ERROR_TITLE" value="Property Load Error"/>
         <property name="PROPERTIES_LOAD_ERROR_MESSAGE" value="An error occurred loading a property file."/>
+        <property name="PSSWORD_FIELD_TITLE" value="Password Error"/>
+        <property name="PSSWRD_FIELD_ERROR_MESSAGE" value="Password must be at least 5 characters long."/>
+        <property name="EMPTY_FIELD_TITLE" value="Empty Field Error"/>
+        <property name="EMPTY_FIELD_ERROR_MESSAGE" value="Please make sure to fill out all fields."/>
 
         <!-- VERIFICATION MESSAGES -->
         <property name="NEW_COMPLETED_MESSAGE" value="New Game Ready"/>

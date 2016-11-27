@@ -13,16 +13,49 @@ public class UserProfile
 	/*/*************************
 	*****USER PROGRESS INFO*****
 	****************************/
-	private int[] progresss;
+	private int[] progress;
+	/*/*************************
+	********CONSTRUCTORS********
+	 ***************************/
+	public UserProfile()
+	{
+		username = null;
+		password = null;
+		progress = new int[GameMode.values().length];
+	}
+	public UserProfile(String username)
+	{
+		this.username = username;
+		password = null;
+		progress = new int[GameMode.values().length];
+	}
+	public UserProfile(String username, String password)
+	{
+		this.username = username;
+		this.password = password;
+		progress = new int[GameMode.values().length];
+	}
+	public void updateModeProgress(GameMode mode, int levelsComplete)
+	{
+		progress[mode.getIntVal()] = levelsComplete;
+	}
 	/*/************************
 	*******GETTER METHODS******
 	***************************/
-	public int[] getProgresss()
+	public int[] 	getProgress()
 	{
-		return progresss;
+		return progress;
 	}
-	public void updateProgress()
+	public String 	getUsername()
 	{
-
+		return username;
+	}
+	public String 	getPassword()
+	{
+		return password;
+	}
+	public int 		getModeProgress(GameMode mode)
+	{
+		return progress[mode.getIntVal()];
 	}
 }

@@ -12,10 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -42,7 +39,7 @@ public class Workspace extends AppWorkspaceComponent
 	Button				logoutButton;	//Button that will log user out
 	Button				playButton;		//Button to start playing a level
 	Button				homeButton;		//Sends the user home
-	Rectangle			userLabel;		//Temporary space holder for username
+	Button				userLabel;		//Temporary space holder for username
 	Label 				levelLabel;		//Label that displays the level
 	Label 				subTitle;		//Sub header for mode
 	ChoiceBox<String>	gameModeMenu;	//Holds all the modes of the game
@@ -67,8 +64,8 @@ public class Workspace extends AppWorkspaceComponent
     }
 	public void activateLoginScreen(boolean visible)
 	{
-		StackPane gridlayover = (StackPane)gui.getAppPane().getCenter();
-		gridlayover.getChildren().get(1).setVisible(visible);
+		StackPane gridLayover = (StackPane)gui.getAppPane().getCenter();
+		gridLayover.getChildren().get(1).setVisible(visible);
 	}
 	public void ensureHomeScreen()
 	{
@@ -104,10 +101,6 @@ public class Workspace extends AppWorkspaceComponent
 		//SET UP SPACING AND PADDING
 		layout.setPadding(new Insets(50));
 		layout.setVgap(20);
-		//SETUP BUTTON STYLE AND SIZE
-		newAccountBttn.setAlignment(Pos.CENTER);
-		newAccountBttn.setMinWidth(150);
-		newAccountBttn.setMaxWidth(155);
 		//ADD EVERYTHING INTO THE LAYOUT
 		layout.add(nameInput, 0, 0);
 		layout.add(passwordInput, 0, 1);
@@ -118,7 +111,7 @@ public class Workspace extends AppWorkspaceComponent
 		//SETUP SIDEBAR
 		VBox sidebarPane = gui.getSidebarPane();
 		//SETUP USER LABEL
-		userLabel.getStyleClass().setAll(propertyManager.getPropertyValue(USERNAME_HOLDER_STYLE));
+		userLabel.setText(((GameData)appTemplate.getDataComponent()).getUser().getUsername());
 		//STYLE LOG OUT BUTTON; SETUP BUTTON STYLE AND SIZE
 		logoutButton.setAlignment(Pos.CENTER);
 		//ADD IT ALL TO THE SIDEBAR
@@ -228,9 +221,9 @@ public class Workspace extends AppWorkspaceComponent
 		homeButton		= new Button("Home");
 		playButton		= new Button();
 		gameModeMenu	= new ChoiceBox();
-		levelLabel = new Label();
-		userLabel = new Rectangle(150, 30);
-		subTitle = new Label();
+		levelLabel 		= new Label();
+		userLabel 		= new Button();
+		subTitle		= new Label();
 	}
 	public void setupHandlers()
 	{
@@ -250,10 +243,11 @@ public class Workspace extends AppWorkspaceComponent
 		sidebarChildren.get(0).getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));	//Login Button
 		sidebarChildren.get(1).getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));	//New Account Btn
 		sidebarChildren.get(2).getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));	//Close Button
-		logoutButton.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));		//Log Out Button
-		newAccountBttn.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));		//Create Account btn
-		homeButton.getStyleClass().setAll(propertyManager.getPropertyValue(BUTTON_STYLE));			//Home Button
-		playButton.getStyleClass().setAll(propertyManager.getPropertyValue(PLAY_BUTTON));
+		logoutButton.getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));		//Log Out Button
+		newAccountBttn.getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));		//Create Account btn
+		homeButton.getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));			//Home Button
+		playButton.getStyleClass().setAll(propertyManager.getPropertyValue(PLAY_BUTTON));		//play button
+		userLabel.getStyleClass().add(propertyManager.getPropertyValue(BUTTON_STYLE));		//user label button
 		//BUTTON TOOLTIP SETUP
 		logoutButton.setTooltip(new Tooltip(propertyManager.getPropertyValue(LOGOUT_TOOLTIP)));
 		newAccountBttn.setTooltip(new Tooltip(propertyManager.getPropertyValue(NEW_ACCOUNT_TOOLTIP)));
