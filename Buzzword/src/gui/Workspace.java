@@ -117,8 +117,8 @@ public class Workspace extends AppWorkspaceComponent
 		//ADD IT ALL TO THE SIDEBAR
 		sidebarPane.getChildren().setAll(userLabel, gameModeMenu, logoutButton);
 		//SETUP DROP DOWN MENU FOR GAME MODE
-		gameModeMenu.getItems().setAll(FAMOUS_PEOPLE.getLiteral(),
-				ENGLISH_DICTIONARY.getLiteral(), PLACES.getLiteral(), SCIENCE.getLiteral());
+		gameModeMenu.getItems().setAll(ENGLISH_DICTIONARY.getLiteral(), FAMOUS_PEOPLE.getLiteral(),
+				SCIENCE.getLiteral(), PLACES.getLiteral());
 		gameModeMenu.setValue(SCIENCE.getLiteral());
 		gameModeMenu.setTooltip(new Tooltip(propertyManager.getPropertyValue(GAME_MODE_MENU_TOOLTIP)));
 	}

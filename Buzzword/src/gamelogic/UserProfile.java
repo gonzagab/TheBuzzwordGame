@@ -35,10 +35,6 @@ public class UserProfile
 		this.password = password;
 		progress = new int[GameMode.values().length];
 	}
-	public void updateModeProgress(GameMode mode, int levelsComplete)
-	{
-		progress[mode.getIntVal()] = levelsComplete;
-	}
 	/*/************************
 	*******GETTER METHODS******
 	***************************/
@@ -57,5 +53,26 @@ public class UserProfile
 	public int 		getModeProgress(GameMode mode)
 	{
 		return progress[mode.getIntVal()];
+	}
+	/*/************************
+	*******SETTER METHODS******
+	***************************/
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+	public void setProgress(int[] progress)
+	{
+		this.progress = progress;
+	}
+	/*/***************
+	 *****************/
+	public void updateModeProgress(GameMode mode, int levelsComplete)
+	{
+		progress[mode.getIntVal()] = levelsComplete;
 	}
 }

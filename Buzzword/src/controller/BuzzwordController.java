@@ -2,6 +2,8 @@ package controller;
 
 import apptemplate.AppTemplate;
 import data.GameData;
+import data.GameDataFile;
+import gamelogic.GameMode;
 import gamelogic.UserProfile;
 import gui.Workspace;
 import javafx.scene.control.Button;
@@ -13,7 +15,7 @@ import propertymanager.PropertyManager;
 import ui.AppGUI;
 import ui.AppMessageDialogSingleton;
 
-import java.io.IOException;
+import java.io.*;
 
 import static gamelogic.GameMode.*;
 import static settings.AppPropertyType.*;
@@ -91,16 +93,33 @@ public class BuzzwordController implements FileController
 				throw new IllegalArgumentException();
 			}
 			//CHECK THAT USER EXISTS
+			File userFile = new File("Buzzword/saved/" + username + ".json");
+			app.getFileComponent().loadData(app.getDataComponent(), userFile.toPath());
 			//CHECK THAT PASSWORD IS CORRECT FOR USER
-			((GameData)app.getDataComponent()).setUser(new UserProfile(username, password));
-			guiWorkspace.loadLoggedInHomeGUI();
+			if(!password.equals(((GameData)app.getDataComponent()).getUser().getPassword()))
+			{
+				System.out.println("Password fucked");
+				throw new IOException();
+			}
+			else
+				guiWorkspace.loadLoggedInHomeGUI();
 		}
 		//IF NOT THEN RETURN CONTROL TO HANDLE LOGIN REQUEST
-		catch(Exception ex)
+		catch(IOException e)		//when a matching json file can't be found
+		{
+			messageDialog.show(propertyManager.getPropertyValue(PSSWRD_NAME_TITLE),
+					propertyManager.getPropertyValue(PSSWRD_NAME_ERROR));
+			handleLoginRequest();
+		}
+		catch(ClassCastException ex)	//for whe switching between login and new user
 		{
 			Button loginButton = (Button) app.getGUI().getSidebarPane().getChildren().get(0);
 			loginButton.setOnAction(e -> handleLoginRequest());
 			handleLoginRequest();
+		}
+		catch(Exception er)	//just in case for everything else
+		{
+			er.printStackTrace();
 		}
 	}
 	public void makeNewAccount()
@@ -133,6 +152,17 @@ public class BuzzwordController implements FileController
 		((GameData)app.getDataComponent()).setUser(new UserProfile(username, password));
 		//LOGIN AND LOAD LOGGED IN GUI
 		((Workspace)app.getWorkspaceComponent()).loadLoggedInHomeGUI();
+		//SAVE NEW USER
+		File userFile = new File("Buzzword/saved/" + username + ".json");
+		try
+		{
+			BufferedWriter bf = new BufferedWriter(new FileWriter(userFile));
+			app.getFileComponent().saveData(app.getDataComponent(), userFile.toPath());
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	public void handleLogoutRequest()
 	{
@@ -140,16 +170,10 @@ public class BuzzwordController implements FileController
 	}
 	public void handleLevelSelect(int selected)
 	{
-		AppGUI gui = app.getGUI();
-
-		if(selected == 0)
-			((Workspace)app.getWorkspaceComponent()).loadModeSelectorGUI(FAMOUS_PEOPLE, 10, 1);
-		else if(selected == 1)
-			((Workspace)app.getWorkspaceComponent()).loadModeSelectorGUI(ENGLISH_DICTIONARY, 10, 2);
-		else if(selected == 2)
-			((Workspace)app.getWorkspaceComponent()).loadModeSelectorGUI(PLACES, 10, 4);
-		else if(selected == 3)
-			((Workspace)app.getWorkspaceComponent()).loadModeSelectorGUI(SCIENCE, 10, 7);
+		GameData data 		= (GameData)app.getDataComponent();
+		UserProfile user 	= data.getUser();
+		GameMode mode 		= GameMode.values()[selected];
+		((Workspace)app.getWorkspaceComponent()).loadModeSelectorGUI(mode, 10, user.getModeProgress(mode));
 	}
 	public void play()
 	{
