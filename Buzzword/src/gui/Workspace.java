@@ -186,7 +186,8 @@ public class Workspace extends AppWorkspaceComponent
 		//SETUP WORD SELECT
 		//SETUP FOUND WORDS AREA
 		//SETUP TARGET DISPLAY
-		Text targetText = new Text("Target: 75 points");
+		Text targetText = new Text("Target: " +
+				((GameData) appTemplate.getDataComponent()).getTargetScore()+ " points");
 		//VBOX FOR RIGHT PANE
 		VBox rightPane = new VBox(new Text(), targetText);
 		gui.getAppPane().setRight(rightPane);
@@ -242,7 +243,11 @@ public class Workspace extends AppWorkspaceComponent
 		//ADD A LISTENER TO THE DROP DOWN MENU
 		gameModeMenu.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> controller.handleLevelSelect(newValue.intValue()));
 		//STAGE CLOSE REQUEST
-		gui.getWindow().setOnCloseRequest(event -> { event.consume(); controller.handleExitRequest();});
+		gui.getWindow().setOnCloseRequest(event ->
+		{
+			event.consume();
+			controller.handleExitRequest();
+		});
 	}
 	@Override
 	public void initStyle()

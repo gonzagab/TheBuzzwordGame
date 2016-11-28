@@ -19,9 +19,9 @@ public class LetterNode
 		adjacentNode = new LetterNode[8];
 		this.letter = letter;
 	}
-	public LetterNode(LetterNode[] adjecentNode, char letter)
+	public LetterNode(LetterNode[] adjacentNode, char letter)
 	{
-		this.adjacentNode = adjecentNode;
+		this.adjacentNode = adjacentNode;
 		this.letter = letter;
 	}
 	/*/*****************************
@@ -31,7 +31,7 @@ public class LetterNode
 	{
 		return letter;
 	}
-	public LetterNode getAdjecentNode(int side)
+	public LetterNode getAdjacentNode(int side)
 	{
 		return adjacentNode[side];
 	}

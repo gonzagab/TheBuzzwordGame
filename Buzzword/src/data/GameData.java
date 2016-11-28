@@ -56,19 +56,22 @@ public class GameData implements AppDataComponent
 				.getResource("words/" + currentMode.getFolder() + "/" + integerToString(currentLevel) + ".txt");
 		assert wordsResource != null;
 		//VARIABLES TO HELP PLACE WORD
-		boolean letterPlaced;
+		boolean letterPlaced;		//indicates if letter was successfully placed
+		boolean wordPlaced;			//indicates if word was successfully placed
 		String word = "HOWDY";
-		boolean visited;
-		int toSkip;
-		int offset;
-		int nodePos;
+		boolean visited;			//indicates of node was visited by a word
+		int toSkip;					//random number to get word form file
+		int offset;		//one through 8. corresponds to the linked array nodes
+		int nodePos;	//the current pos. 1 - 16. 16 nodes in array list
 		int[] visitedNode = new int[currentLevel + 4];
 		int[] offsetVal = {-4, -3, 1, 5, 4, 3, -1, -5};
 
-		for(int manyWords = 0; manyWords < 3; manyWords++)
+		for(int manyWords = 0; manyWords < 10; manyWords++)
 		{
+			//REST NODES VISITED
 			for(int i = 0; i < visitedNode.length; i++)
 				visitedNode[i] = -1;
+			//GET A RANDOM WORD
 			toSkip = new Random().nextInt(TOTAL_NUMBER_OF_STORED_WORDS);
 			try(Stream<String> lines = Files.lines(Paths.get(wordsResource.toURI())))
 			{
@@ -81,6 +84,8 @@ public class GameData implements AppDataComponent
 			}
 			//RANDOMLY START AT A NODE IN GRID
 			nodePos = ((int) (Math.random() * 16));        //range from 0 - 15
+			//REST WORD PLACE BOOLEAN
+			wordPlaced = true;
 			//PLACE WORD
 			for(int i = 0; i < word.length(); i++)
 			{
@@ -89,11 +94,13 @@ public class GameData implements AppDataComponent
 				/* FIRST CREATE OFFSET */
 				offset = (int) (Math.random() * 8); //random offset to begin at 0 - 8 adjacent nodes
 				/* THEN CHECK OFFSET NODE */
-				for(int j = 0; j < 7; j++)    //7 because there are 8 adjacent nodes
+				for(int j = 0; j < 8; j++)    // because there are 8 adjacent nodes
 				{
 					//CHECK FOR OVERFLOW AND THAT OFFSET IS IN RANGE
-					while(playingGrid.get(nodePos).getAdjecentNode(offset) == null)
+					int count = 0;	//count loops
+					while(playingGrid.get(nodePos).getAdjacentNode(offset) == null)
 					{
+						j += count++;
 						offset++;
 						if(offset > 7)
 							offset = 0;
@@ -101,8 +108,7 @@ public class GameData implements AppDataComponent
 					//CHECK THAT NODE HASN'T BEEN VISITED BEFORE
 					visited = false;
 					for(int k = 0; k < i; k++)
-					{
-						if(visitedNode[k] == nodePos + offsetVal[offset])
+						if(visitedNode[k] == (nodePos + offsetVal[offset]))
 						{
 							visited = true;
 							//NEW OFFSET - increment to next node
@@ -111,22 +117,22 @@ public class GameData implements AppDataComponent
 								offset = 0;
 							break;            //NO NEED TO CONTINUE LOOKING
 						}
-					}
 					if(!visited)
 					{
-						if(playingGrid.get(nodePos).getAdjecentNode(offset).getLetter() == '-')    //IF EMPTY
+						if(playingGrid.get(nodePos).getAdjacentNode(offset).getLetter() == '-')    //IF EMPTY
 						{
 							j = 10;        //NO NEED TO LOOK INTO OTHER NODES
 							nodePos += offsetVal[offset];
+							//visitedNode[i] = nodePos;
 							letterPlaced = true;
-							visitedNode[i] = nodePos;
+
 						}
-						else if(playingGrid.get(nodePos).getAdjecentNode(offset).getLetter() == word.charAt(i)) //IF SAME LETTER IS THERE
+						else if(playingGrid.get(nodePos).getAdjacentNode(offset).getLetter() == word.charAt(i)) //IF SAME LETTER IS THERE
 						{
 							j = 10;        //NO NEED TO LOOK INTO OTHER NODES
 							nodePos += offsetVal[offset];
+							//visitedNode[i] = nodePos;
 							letterPlaced = true;
-							visitedNode[i] = nodePos;
 						}
 						else            //IF A DIFFERENT LETTER IS THERE
 						{
@@ -138,11 +144,20 @@ public class GameData implements AppDataComponent
 					}
 				}
 				//PLACE LETTER INTO NODE - random beginner node or adjacent node
-				playingGrid.get(nodePos).setLetter(word.charAt(i));
-				visitedNode[i] = nodePos;    //save where letter was placed
+				if(letterPlaced)
+				{
+					playingGrid.get(nodePos).setLetter(word.charAt(i));
+					visitedNode[i] = nodePos;    //save where letter was placed
+				}
+				else
+					wordPlaced = false;
 			}
-			System.out.println(word);
+			System.out.println(word +" - "+ wordPlaced);
+			//CALCULATE SCORE
+			if(wordPlaced)
+				targetScore += word.length()*2;
 		}
+		targetScore /= 2;
 	}
 	/*/******************************
 	 *********GETTER METHODS*********
@@ -151,12 +166,6 @@ public class GameData implements AppDataComponent
 	{
 		return playingGrid;
 	}
-	public UserProfile getUser()
-	{
-		if(user == null)
-			user = new UserProfile();
-		return user;
-	}
 	public GameMode getCurrentMode()
 	{
 		return currentMode;
@@ -164,6 +173,16 @@ public class GameData implements AppDataComponent
 	public int getTimeAllowed()
 	{
 		return timeAllowed;
+	}
+	public int getTargetScore()
+	{
+		return targetScore;
+	}
+	public UserProfile getUser()
+	{
+		if(user == null)
+			user = new UserProfile();
+		return user;
 	}
 	/*/******************************
 	 *********SETTER METHODS*********

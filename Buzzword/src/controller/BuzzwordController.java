@@ -59,11 +59,16 @@ public class BuzzwordController implements FileController
 	{
 
 	}
-
 	@Override
 	public void handleExitRequest()
 	{
 		System.out.println("Exist request");
+		if(isPlaying)
+		{
+			timeline.pause();
+			isPlaying = false;
+			((Workspace)app.getWorkspaceComponent()).isPlayingSetup(false);
+		}
 		try
 		{
 			boolean exit = true;
@@ -227,6 +232,15 @@ public class BuzzwordController implements FileController
 	 *****************************/
 	public void handleLogoutRequest()
 	{
+		if(startedPlaying)
+		{
+			//VARIABLES NEEDED TO RESET LEVEL
+			counter = gameData.getTimeAllowed();
+			isPlaying = false;
+			startedPlaying = false;
+			//RESET TIMER
+			timeline.stop();
+		}
 		app.getWorkspaceComponent().reloadWorkspace();
 	}
 	public void handleHomeRequest()
@@ -234,8 +248,11 @@ public class BuzzwordController implements FileController
 		//VARIABLES NEEDED TO RESET LEVEL
 		GameMode currentMode 	= gameData.getCurrentMode();
 		UserProfile user 		= gameData.getUser();
-		counter					=gameData.getTimeAllowed();
+		counter					= gameData.getTimeAllowed();
+		isPlaying				= false;
+		startedPlaying			= false;
 		//RESET TIMER
+		timeline.stop();
 		timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> counterMethod()));
 		timeline.setCycleCount(counter);
 		//RESET HOME GUI - SIDEBAR
@@ -260,7 +277,7 @@ public class BuzzwordController implements FileController
 	public void counterMethod()
 	{
 		counter--;
-	((Workspace)app.getWorkspaceComponent()).updateTimerDisplay(counter);
+		((Workspace)app.getWorkspaceComponent()).updateTimerDisplay(counter);
 	}
 	/*/**********************
 	 *****PROMPT METHODS*****
