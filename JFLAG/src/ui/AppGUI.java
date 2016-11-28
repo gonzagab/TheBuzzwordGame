@@ -209,9 +209,13 @@ public class AppGUI implements AppStyleArbiter {
 	 ***************** GETTER METHODS *************************
 	 **********************************************************/
 	public VBox getSidebarPane()
-	{ return sidebarPane; }
+	{
+		return sidebarPane;
+	}
 	public BorderPane getAppPane()
-	{ return appPane; }
+	{
+		return appPane;
+	}
 	/**
 	 * Accessor method for getting this application's primary stage's,
 	 * scene.
@@ -219,7 +223,9 @@ public class AppGUI implements AppStyleArbiter {
 	 * @return This application's window's scene.
 	 */
 	public Scene getPrimaryScene()
-	{ return primaryScene; }
+	{
+		return primaryScene;
+	}
 	/**
 	 * Accessor method for getting this application's window,
 	 * which is the primary stage within which the full GUI will be placed.
@@ -227,11 +233,27 @@ public class AppGUI implements AppStyleArbiter {
 	 * @return This application's primary stage (i.e. window).
 	 */
 	public Stage getWindow()
-	{ return primaryStage; }
+	{
+		return primaryStage;
+	}
 	/**
 	 * This function specifies the CSS style classes for the controls managed
 	 * by this framework.
 	 */
 	public FileController getFileController()
-	{return fileController;}
+	{
+		return fileController;
+	}
+	public Button getNewButton()
+	{
+		return newButton;
+	}
+	public Button getLoginButton()
+	{
+		return loginButton;
+	}
+	public Button getCloseButton()
+	{
+		return closeButton;
+	}
 }

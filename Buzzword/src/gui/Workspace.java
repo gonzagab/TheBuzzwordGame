@@ -5,9 +5,8 @@ import components.AppWorkspaceComponent;
 import controller.BuzzwordController;
 import data.GameData;
 import gamelogic.GameMode;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -17,7 +16,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.util.Duration;
+import javafx.stage.WindowEvent;
 import propertymanager.PropertyManager;
 import ui.AppGUI;
 
@@ -43,7 +42,6 @@ public class Workspace extends AppWorkspaceComponent
 	Label 				levelLabel;		//Label that displays the level
 	Label 				subTitle;		//Sub header for mode
 	ChoiceBox<String>	gameModeMenu;	//Holds all the modes of the game
-	int count;
 	//Property Manager
 	PropertyManager propertyManager = PropertyManager.getManager();
 	/*/***********************************
@@ -53,15 +51,18 @@ public class Workspace extends AppWorkspaceComponent
 	{
 		appTemplate = app;
 		gui = app.getGUI();
-		count = 60;
 		setupGUI();
 		setupHandlers();
 	}
     @Override
     public void reloadWorkspace()
     {
-
-    }
+		BuzzwordController controller = (BuzzwordController)gui.getFileController();
+		gui.getSidebarPane().getChildren().setAll(gui.getLoginButton(), gui.getNewButton(), gui.getCloseButton());
+		ensureHomeScreen();
+		gameModeMenu	= new ChoiceBox();
+		gameModeMenu.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> controller.handleLevelSelect(newValue.intValue()));
+	}
 	public void activateLoginScreen(boolean visible)
 	{
 		StackPane gridLayover = (StackPane)gui.getAppPane().getCenter();
@@ -78,11 +79,13 @@ public class Workspace extends AppWorkspaceComponent
 		StackPane homePane = new StackPane(logo, loginLayoverPane);
 		//SET THE HOME PANE IN THE CENTER
 		gui.getAppPane().setCenter(homePane);
+		//CLEAR RIGHT PANE JUST IN CASE
+		gui.getAppPane().setRight(null);
 	}
-	public void doSomething(Text countText)
+	public void updateTimerDisplay(int count)
 	{
+		Text countText = (Text)((VBox)gui.getAppPane().getRight()).getChildren().get(0);
 		countText.setText("Time Remaining: " +count+" seconds");
-		count--;
 	}
 	/*/***********************************************
 	 *******************GUI LOADERS*******************
@@ -112,8 +115,6 @@ public class Workspace extends AppWorkspaceComponent
 		VBox sidebarPane = gui.getSidebarPane();
 		//SETUP USER LABEL
 		userLabel.setText(((GameData)appTemplate.getDataComponent()).getUser().getUsername());
-		//STYLE LOG OUT BUTTON; SETUP BUTTON STYLE AND SIZE
-		logoutButton.setAlignment(Pos.CENTER);
 		//ADD IT ALL TO THE SIDEBAR
 		sidebarPane.getChildren().setAll(userLabel, gameModeMenu, logoutButton);
 		//SETUP DROP DOWN MENU FOR GAME MODE
@@ -121,6 +122,13 @@ public class Workspace extends AppWorkspaceComponent
 				SCIENCE.getLiteral(), PLACES.getLiteral());
 		gameModeMenu.setValue(SCIENCE.getLiteral());
 		gameModeMenu.setTooltip(new Tooltip(propertyManager.getPropertyValue(GAME_MODE_MENU_TOOLTIP)));
+	}
+	public void reloadHomeGuiSidebar()
+	{
+		VBox sidebarPane = gui.getSidebarPane();
+		sidebarPane.getChildren().setAll(userLabel, gameModeMenu, logoutButton);
+		gui.getAppPane().setRight(null);
+		((BuzzwordController)gui.getFileController()).startedPlaying(false);
 	}
 	public void loadModeSelectorGUI(GameMode mode, int totalLevels, int levelsCompleted)
 	{
@@ -156,8 +164,9 @@ public class Workspace extends AppWorkspaceComponent
 	}
 	public void loadGameLevelGUI(int level, GameMode mode)
 	{
+		((BuzzwordController)gui.getFileController()).startedPlaying(true);
 		//SETUP SIDEBAR
-		gui.getSidebarPane().getChildren().setAll(userLabel, homeButton);
+		gui.getSidebarPane().getChildren().setAll(userLabel, homeButton, logoutButton);
 		//SETUP HEADER
 		subTitle.setText(mode.getLiteral());
 		//SETUP PLAY GRID GUI
@@ -168,24 +177,21 @@ public class Workspace extends AppWorkspaceComponent
 		playGrid.setPadding(new Insets(30, 0, 0, 50));
 		//SETUP LEVEL LABEL
 		levelLabel.setText("Level " + level);
+		//MAKE SURE PLAY BUTTON IS SET AS PLAY BUTTON
+		playButton.getStyleClass().setAll(propertyManager.getPropertyValue(PLAY_BUTTON));
 		//ADD IT ALL TO THE V-BOX
 		VBox centerPane = new VBox(subTitle, playGrid, levelLabel, playButton);
 		//SETUP CENTER PANE
 		gui.getAppPane().setCenter(centerPane);
-		//SETUP TEXT FOR THE COUNT
-		Text countText = new Text();
-		countText.setText("Time Remaining: 60 seconds");
-		//SETUP TIME COUNT
-		Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> doSomething(countText)));
-		timeline.setCycleCount(60);
-		timeline.play();
 		//SETUP WORD SELECT
 		//SETUP FOUND WORDS AREA
 		//SETUP TARGET DISPLAY
-		Text targetText = new Text("Target\n75points");
+		Text targetText = new Text("Target: 75 points");
 		//VBOX FOR RIGHT PANE
-		VBox rightPane = new VBox(countText, targetText);
+		VBox rightPane = new VBox(new Text(), targetText);
 		gui.getAppPane().setRight(rightPane);
+		//DISPLAY TIMER DISPLAY
+		updateTimerDisplay(((GameData) appTemplate.getDataComponent()).getTimeAllowed());
 	}
 	public void isPlayingSetup(boolean isPlaying)
 	{
@@ -232,8 +238,11 @@ public class Workspace extends AppWorkspaceComponent
 		newAccountBttn.setOnAction(e -> controller.makeNewAccount());
 		logoutButton.setOnAction(e -> controller.handleLogoutRequest());
 		playButton.setOnAction(e -> controller.play());
+		homeButton.setOnAction(e -> controller.handleHomeRequest());
 		//ADD A LISTENER TO THE DROP DOWN MENU
 		gameModeMenu.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> controller.handleLevelSelect(newValue.intValue()));
+		//STAGE CLOSE REQUEST
+		gui.getWindow().setOnCloseRequest(event -> { event.consume(); controller.handleExitRequest();});
 	}
 	@Override
 	public void initStyle()
@@ -343,13 +352,6 @@ public class Workspace extends AppWorkspaceComponent
 		Text[][] letter = new Text[4][4];
 		ArrayList gridLetters = dataComponent.initPlayGrid();
 
-/*
-		Text[][] letter = {
-				{new Text("B"), new Text("U"), new Text("O"), new Text("E")},
-				{new Text("Z"), new Text("Z"), new Text("G"), new Text("H")},
-				{new Text("W"), new Text("C"), new Text("W"), new Text("O")},
-				{new Text("A"), new Text("X"), new Text("R"), new Text("D")}};
-*/
 		for(int i = 0; i<4; i++)
 		{
 			for(int j = 0; j < 4; j++)

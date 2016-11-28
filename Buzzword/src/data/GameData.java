@@ -24,7 +24,7 @@ public class GameData implements AppDataComponent
 	public final int TOTAL_NUMBER_OF_STORED_WORDS = 100;
 	private GameMode 	currentMode;		//Indicates the current mode
 	private int			currentLevel;		//Indicates the current level
-	private int			timeAllowed;		//Indicates how much time is allowed for the level
+	private int			timeAllowed;		//Indicates how much time is allowed for the level in seconds
 	private ArrayList<LetterNode> playingGrid;	//The actual grid itself
 	private int			targetScore;		//Score needed to reach to pass level
 	private int			currentScore;		//Score currently at
@@ -35,19 +35,12 @@ public class GameData implements AppDataComponent
 	{
 		goodWords = new HashSet<>();
 		initPlayingGrid();
-
-/*
-		playingGrid = new char[]
-		{
-				'-', '-', '-', '-',
-				'-', '-', '-', '-',
-				'-', '-', '-', '-',
-				'-', '-', '-', '-'
-		};
-*/
+		targetScore = 0;
+		timeAllowed = 60;
 	}
 	public ArrayList<LetterNode> initPlayGrid()
 	{
+		initPlayingGrid();
 		generatePlayingGrid();
 
 		return playingGrid;
@@ -163,6 +156,14 @@ public class GameData implements AppDataComponent
 		if(user == null)
 			user = new UserProfile();
 		return user;
+	}
+	public GameMode getCurrentMode()
+	{
+		return currentMode;
+	}
+	public int getTimeAllowed()
+	{
+		return timeAllowed;
 	}
 	/*/******************************
 	 *********SETTER METHODS*********
