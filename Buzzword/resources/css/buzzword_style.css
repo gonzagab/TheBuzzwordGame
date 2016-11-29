@@ -37,10 +37,19 @@
     -fx-font-weight: bold;
     -fx-opacity: 1;
     -fx-underline: true;
+    -fx-position: center;
 }
 .background-style
 {
-    -fx-background-color: linear-gradient(to right, #ADB0AB 20% , #D8D8D8 10%);
+    -fx-background-color: linear-gradient(to right, #ADB0AB 20%, #D8D8D8 20% , #D8D8D8 80%, #ADB0AB 10%);
+}
+.text-pane-background
+{
+    -fx-background-color: red;
+    -fx-width: 200px;
+    -fx-max-height: 200px;
+
+
 }
 /*****************************************
 *************BUTTON STYLES****************

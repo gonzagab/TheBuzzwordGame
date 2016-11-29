@@ -30,17 +30,21 @@ import static gui.BuzzwordProperties.*;
  */
 public class Workspace extends AppWorkspaceComponent
 {
+	//FRAMEWORK REFERENCES
     AppTemplate 	appTemplate;    	//reference to the actual app
     AppGUI      	gui;            	//access to the app gui
     //Workspace GUI Objects
-	Label       		gameHeader;     //the header of the game
+			/*BUTTONS*/
 	Button 				newAccountBttn;	//Button for users to create a new account
 	Button				logoutButton;	//Button that will log user out
 	Button				playButton;		//Button to start playing a level
 	Button				homeButton;		//Sends the user home
 	Button				userLabel;		//Temporary space holder for username
+			/*LABELS*/
+	Label       		gameHeader;     //the header of the game
 	Label 				levelLabel;		//Label that displays the level
 	Label 				subTitle;		//Sub header for mode
+			/*DROOP DOWN MENU*/
 	ChoiceBox<String>	gameModeMenu;	//Holds all the modes of the game
 	//Property Manager
 	PropertyManager propertyManager = PropertyManager.getManager();
@@ -54,9 +58,12 @@ public class Workspace extends AppWorkspaceComponent
 		setupGUI();
 		setupHandlers();
 	}
-    @Override
-    public void reloadWorkspace()
-    {
+	/*/***********************************
+	 ************GUI MODIFIERS************
+	 *************************************/
+	@Override
+	public void reloadWorkspace()
+	{
 		BuzzwordController controller = (BuzzwordController)gui.getFileController();
 		gui.getSidebarPane().getChildren().setAll(gui.getLoginButton(), gui.getNewButton(), gui.getCloseButton());
 		ensureHomeScreen();
@@ -183,13 +190,18 @@ public class Workspace extends AppWorkspaceComponent
 		VBox centerPane = new VBox(subTitle, playGrid, levelLabel, playButton);
 		//SETUP CENTER PANE
 		gui.getAppPane().setCenter(centerPane);
+
 		//SETUP WORD SELECT
+		Label selectedWord = new Label("Selected Word");
 		//SETUP FOUND WORDS AREA
+		VBox wordsFoundArea = new VBox(new Label("Words Found"));
+		wordsFoundArea.setVgrow(wordsFoundArea.getChildren().get(0), Priority.ALWAYS);
 		//SETUP TARGET DISPLAY
 		Text targetText = new Text("Target: " +
 				((GameData) appTemplate.getDataComponent()).getTargetScore()+ " points");
 		//VBOX FOR RIGHT PANE
-		VBox rightPane = new VBox(new Text(), targetText);
+		VBox rightPane = new VBox(new Text(),selectedWord, wordsFoundArea, targetText);
+		rightPane.getStyleClass().addAll(propertyManager.getPropertyValue(TEXT_PANE_BACKGROUND));
 		gui.getAppPane().setRight(rightPane);
 		//DISPLAY TIMER DISPLAY
 		updateTimerDisplay(((GameData) appTemplate.getDataComponent()).getTimeAllowed());

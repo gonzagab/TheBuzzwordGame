@@ -13,6 +13,7 @@
         <property name="TEXTFIELD_STYLE"    value="textfield-style"/>
         <property name="LABEL_STYLE"        value="label-style"/>
         <property name="SUB_HEADER_STYLE"   value="sub-header-style"/>
+        <property name="TEXT_PANE_BACKGROUND" value="text-pane-background"/>
         <!-- BUTTON STYLE CSS -->
         <property name="BACKGROUND_STYLE"   value="background-style"/>
         <property name="PLAY_BUTTON"        value="play-button"/>
