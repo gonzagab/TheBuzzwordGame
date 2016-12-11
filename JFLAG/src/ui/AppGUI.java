@@ -123,13 +123,6 @@ public class AppGUI implements AppStyleArbiter {
 //                System.exit(1);
 //            }
 //        });
-//        loadButton.setOnAction(e -> {
-//            try {
-//                fileController.handleLoadRequest();
-//            } catch (IOException e1) {
-//                e1.printStackTrace();
-//            }
-//        });
         closeButton.setOnAction(e -> fileController.handleExitRequest());
     }
     // INITIALIZE THE WINDOW (i.e. STAGE) PUTTING ALL THE CONTROLS

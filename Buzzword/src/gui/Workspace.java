@@ -11,11 +11,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.WindowEvent;
 import propertymanager.PropertyManager;
 import ui.AppGUI;
@@ -35,19 +37,29 @@ public class Workspace extends AppWorkspaceComponent
     AppGUI      	gui;            	//access to the app gui
     //Workspace GUI Objects
 			/*BUTTONS*/
-	Button 				newAccountBttn;	//Button for users to create a new account
-	Button				logoutButton;	//Button that will log user out
-	Button				playButton;		//Button to start playing a level
-	Button				homeButton;		//Sends the user home
-	Button				userLabel;		//Temporary space holder for username
+	Button 			newAccountBttn;	//Button for users to create a new account
+	Button			logoutButton;	//Button that will log user out
+	Button			playButton;		//Button to start playing a level
+	Button			homeButton;		//Sends the user home
+	Button			userLabel;		//Temporary space holder for username
 			/*LABELS*/
-	Label       		gameHeader;     //the header of the game
-	Label 				levelLabel;		//Label that displays the level
-	Label 				subTitle;		//Sub header for mode
+	Label       	gameHeader;     //the header of the game
+	Label 			levelLabel;		//Label that displays the level
+	Label 			subTitle;		//Sub header for mode
+	Label			slctWordLabel;	//labe/ for the selected word
+	Label			fndAreadLabel;	//label for the found word area
+	Label			timeLabel;		//label for time remaining
+	Label			trgtScoreLabel;	//holds the target score
+			/*TEXT  AREAS*/
+	TextArea 			selectedWordArea;//area will hold the word the user has guessd
+	TextArea 			foundWordArea;	//area will hold all the words the user has found so far
+	//SETUP TEXT FIELDS
+	TextField username = new TextField();
+	TextField password = new TextField();
 			/*DROOP DOWN MENU*/
 	ChoiceBox<String>	gameModeMenu;	//Holds all the modes of the game
 	//Property Manager
-	PropertyManager propertyManager = PropertyManager.getManager();
+	PropertyManager 	propertyManager = PropertyManager.getManager();
 	/*/***********************************
 	 *************CONSTRUCTOR*************
 	 *************************************/
@@ -91,7 +103,7 @@ public class Workspace extends AppWorkspaceComponent
 	}
 	public void updateTimerDisplay(int count)
 	{
-		Text countText = (Text)((VBox)gui.getAppPane().getRight()).getChildren().get(0);
+		Label countText = (Label) ((VBox)gui.getAppPane().getRight()).getChildren().get(0);
 		countText.setText("Time Remaining: " +count+" seconds");
 	}
 	/*/***********************************************
@@ -181,27 +193,25 @@ public class Workspace extends AppWorkspaceComponent
 		dataComponent.setCurrentLevel(level);
 		dataComponent.setCurrentMode(mode);
 		StackPane playGrid = setupGridLevel();
-		playGrid.setPadding(new Insets(30, 0, 0, 50));
+		playGrid.setPadding(new Insets(20, 0, 20, 0));
 		//SETUP LEVEL LABEL
 		levelLabel.setText("Level " + level);
 		//MAKE SURE PLAY BUTTON IS SET AS PLAY BUTTON
 		playButton.getStyleClass().setAll(propertyManager.getPropertyValue(PLAY_BUTTON));
 		//ADD IT ALL TO THE V-BOX
 		VBox centerPane = new VBox(subTitle, playGrid, levelLabel, playButton);
+		centerPane.setAlignment(Pos.CENTER);
 		//SETUP CENTER PANE
 		gui.getAppPane().setCenter(centerPane);
-
-		//SETUP WORD SELECT
-		Label selectedWord = new Label("Selected Word");
+		//SETUP WORD SELECT AREA
+		selectedWordArea.setEditable(false);
 		//SETUP FOUND WORDS AREA
-		VBox wordsFoundArea = new VBox(new Label("Words Found"));
-		wordsFoundArea.setVgrow(wordsFoundArea.getChildren().get(0), Priority.ALWAYS);
-		//SETUP TARGET DISPLAY
-		Text targetText = new Text("Target: " +
+		foundWordArea.setEditable(false);
+		//SETUP TARGET SCORE
+		trgtScoreLabel.setText("Target: " +
 				((GameData) appTemplate.getDataComponent()).getTargetScore()+ " points");
 		//VBOX FOR RIGHT PANE
-		VBox rightPane = new VBox(new Text(),selectedWord, wordsFoundArea, targetText);
-		rightPane.getStyleClass().addAll(propertyManager.getPropertyValue(TEXT_PANE_BACKGROUND));
+		VBox rightPane = new VBox(timeLabel,slctWordLabel, selectedWordArea, fndAreadLabel, foundWordArea, trgtScoreLabel);
 		gui.getAppPane().setRight(rightPane);
 		//DISPLAY TIMER DISPLAY
 		updateTimerDisplay(((GameData) appTemplate.getDataComponent()).getTimeAllowed());
@@ -212,7 +222,7 @@ public class Workspace extends AppWorkspaceComponent
 		playButton.getStyleClass().setAll(propertyManager.getPropertyValue(PLAY_BUTTON));
 		if(isPlaying)
 			playButton.getStyleClass().setAll(propertyManager.getPropertyValue(PAUSE_BUTTON));
-		//MAKE LETTERS VISIBLE
+		//MAKE LETTERS VISIBLE OR INVISIBLE
 		VBox centerPane 	= (VBox)gui.getAppPane().getCenter();
 		StackPane playGrid 	= (StackPane) centerPane.getChildren().get(1);
 		playGrid.getChildren().get(1).setVisible(isPlaying);
@@ -235,14 +245,24 @@ public class Workspace extends AppWorkspaceComponent
 		//SET THE HOME PANE IN THE CENTER
 		gui.getAppPane().setCenter(homePane);
 		//INITIALIZE BUTTONS AND OTHER THINGS - EVEN IF NOT ON GUI YET
+		/*BUTTONS*/
 		newAccountBttn	= new Button("Create Account");
 		logoutButton	= new Button("Log Out");
 		homeButton		= new Button("Home");
 		playButton		= new Button();
-		gameModeMenu	= new ChoiceBox();
-		levelLabel 		= new Label();
 		userLabel 		= new Button();
+		/*CHOICE BOX*/
+		gameModeMenu	= new ChoiceBox();
+		/*LABELS*/
+		slctWordLabel	= new Label("Selected Word");
+		fndAreadLabel	= new Label("Words Found");
+		timeLabel		= new Label();
+		trgtScoreLabel	= new Label();
+		levelLabel 		= new Label();
 		subTitle		= new Label();
+		/*TEXT AREA*/
+		selectedWordArea= new TextArea();
+		foundWordArea	= new TextArea();
 	}
 	public void setupHandlers()
 	{
@@ -259,6 +279,17 @@ public class Workspace extends AppWorkspaceComponent
 		{
 			event.consume();
 			controller.handleExitRequest();
+		});
+		//TEXT FIELD KEY PRESSED HANDLERS
+		username.setOnKeyPressed(e ->
+		{
+			if(e.getCode().equals(KeyCode.ENTER))
+				controller.login();
+		});
+		password.setOnKeyPressed(e ->
+		{
+			if(e.getCode().equals(KeyCode.ENTER))
+				controller.login();
 		});
 	}
 	@Override
@@ -288,6 +319,17 @@ public class Workspace extends AppWorkspaceComponent
 		//SETUP SUB HEADERS STYLE
 		subTitle.getStyleClass().setAll(propertyManager.getPropertyValue(SUB_HEADER_STYLE));
 		levelLabel.getStyleClass().setAll(propertyManager.getPropertyValue(SUB_HEADER_STYLE));
+		//SETUP RIGHT PANE LABEL STYLE
+		slctWordLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
+		fndAreadLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
+		timeLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
+		trgtScoreLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
+		//SETUP TEXT AREA STYLE
+		selectedWordArea.getStyleClass().addAll(propertyManager.getPropertyValue(SELECTED_WORD_AREA));
+		foundWordArea.getStyleClass().addAll(propertyManager.getPropertyValue(FOUND_WORD_AREA));
+		//STYLE TEXT FIELDS
+		username.getStyleClass().setAll(propertyManager.getPropertyValue(TEXTFIELD_STYLE));
+		password.getStyleClass().setAll(propertyManager.getPropertyValue(TEXTFIELD_STYLE));
 	}
 	/*/***************************************************
 	 **************PRIVATE HELPER METHODS*****************
@@ -327,15 +369,10 @@ public class Workspace extends AppWorkspaceComponent
 		GridPane loginFields = new GridPane();
 		//SETUP TEXT FIELD LABELS AND STYLE THEM
 		Label name = new Label("Username");
-		Label passwrd = new Label("Password");		name.getStyleClass().setAll(propertyManager.getPropertyValue(LABEL_STYLE));
+		Label passwrd = new Label("Password");
+		name.getStyleClass().setAll(propertyManager.getPropertyValue(LABEL_STYLE));
 		//STYLE LABELS
 		passwrd.getStyleClass().setAll(propertyManager.getPropertyValue(LABEL_STYLE));
-		//SETUP TEXT FIELDS
-		TextField username = new TextField();
-		TextField password = new TextField();
-		//STYLE TEXT FIELDS
-		username.getStyleClass().setAll(propertyManager.getPropertyValue(TEXTFIELD_STYLE));
-		password.getStyleClass().setAll(propertyManager.getPropertyValue(TEXTFIELD_STYLE));
 		//SIZE TEXT FIELDS
 		username.setMaxSize(150, 30);
 		password.setMaxSize(150, 30);
@@ -361,8 +398,11 @@ public class Workspace extends AppWorkspaceComponent
 	private StackPane setupGridLevel()
 	{
 		StackPane playGrid = new StackPane();
+		playGrid.setAlignment(Pos.CENTER);
 		GridPane letterGrid = new GridPane();
+		letterGrid.setAlignment(Pos.CENTER);
 		GridPane circleGrid = new GridPane();
+		circleGrid.setAlignment(Pos.CENTER);
 		Circle container;
 
 		GameData dataComponent = (GameData) appTemplate.getDataComponent();

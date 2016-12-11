@@ -41,15 +41,29 @@
 }
 .background-style
 {
-    -fx-background-color: linear-gradient(to right, #ADB0AB 20%, #D8D8D8 20% , #D8D8D8 80%, #ADB0AB 10%);
+    -fx-background-color: linear-gradient(to right, #ADB0AB 20%, #888888  20% , #888888  80%, #ADB0AB 10%);
+
 }
-.text-pane-background
+.right-pane-text-style
 {
-    -fx-background-color: red;
-    -fx-width: 200px;
+    -fx-font-size: 12pt;
+    -fx-font-family: "Segoe UI Light";
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-opacity: 1;
+    -fx-position: left;
+}
+.selected-word-area
+{
+    -fx-background-color: #b8cbe0;
+    -fx-max-width: 160px;
+    -fx-max-height: 30px;
+}
+.found-word-area
+{
+    -fx-background-color: #b8cbe0;
+    -fx-max-width: 160px;
     -fx-max-height: 200px;
-
-
 }
 /*****************************************
 *************BUTTON STYLES****************
@@ -73,6 +87,7 @@
         rgb(55, 20, 20),
         linear-gradient(to top, white 2%, grey 98%);
 }
+/*PLAY AND PAUSE BUTTON STYLE*/
 .play-button
  {
     -fx-background-image: url(images/playButtonImage.jpg);

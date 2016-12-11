@@ -159,7 +159,7 @@ public class BuzzwordController implements FileController
 		PropertyManager propertyManager = PropertyManager.getManager();
 		try
 		{
-			guiWorkspace.activateLoginScreen(false);
+			guiWorkspace.activateLoginScreen(true);
 			//IF EVERYTHING IS OK THEN GET INFO IN FIELDS
 			StackPane gridLayover = (StackPane) appGUI.getAppPane().getCenter();
 			StackPane loginLayover = (StackPane) gridLayover.getChildren().get(1);
@@ -189,12 +189,15 @@ public class BuzzwordController implements FileController
 			if(!password.equals(((GameData) app.getDataComponent()).getUser().getPassword()))
 			{
 				System.out.println("Password fucked");
+				passwordField.clear();
 				throw new IOException();
 			}
 			else
 			{
 				Button loginButton = (Button) app.getGUI().getSidebarPane().getChildren().get(0);
 				guiWorkspace.loadLoggedInHomeGUI();
+				usernameField.clear();
+				passwordField.clear();
 				loginButton.setOnAction(e -> handleLoginRequest());
 			}
 		}
