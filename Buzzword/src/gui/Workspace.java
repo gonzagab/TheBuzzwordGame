@@ -1,6 +1,7 @@
 package gui;
 
 import apptemplate.AppTemplate;
+import com.sun.javafx.scene.layout.region.BorderImageSliceConverter;
 import components.AppWorkspaceComponent;
 import controller.BuzzwordController;
 import data.GameData;
@@ -12,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -46,8 +48,8 @@ public class Workspace extends AppWorkspaceComponent
 	Label       	gameHeader;     //the header of the game
 	Label 			levelLabel;		//Label that displays the level
 	Label 			subTitle;		//Sub header for mode
-	Label			slctWordLabel;	//labe/ for the selected word
-	Label			fndAreadLabel;	//label for the found word area
+	Label			slctWordLabel;	//label for the selected word
+	Label			fndAreaLabel;	//label for the found word area
 	Label			timeLabel;		//label for time remaining
 	Label			trgtScoreLabel;	//holds the target score
 			/*TEXT  AREAS*/
@@ -90,21 +92,64 @@ public class Workspace extends AppWorkspaceComponent
 	public void ensureHomeScreen()
 	{
 		StackPane loginLayoverPane = setupLoginLayoverPane();
-		loginLayoverPane.setPadding(new Insets(30, 0, 0, 50));
 		//SETUP LOGO GRID
 		GridPane logo = setupLogoGrid();
-		logo.setPadding(new Insets(30, 0, 0, 50));
 		//CREATE A HOME PANE THAT HAS THE LOGO AND AN INVISIBLE LOGIN AREA
 		StackPane homePane = new StackPane(logo, loginLayoverPane);
+		homePane.setPadding(new Insets(30, 0, 0, 0));
+		homePane.setAlignment(Pos.TOP_CENTER);
 		//SET THE HOME PANE IN THE CENTER
 		gui.getAppPane().setCenter(homePane);
 		//CLEAR RIGHT PANE JUST IN CASE
 		gui.getAppPane().setRight(null);
 	}
+	/*GAME PLAY MODIFIERS*/
 	public void updateTimerDisplay(int count)
 	{
 		Label countText = (Label) ((VBox)gui.getAppPane().getRight()).getChildren().get(0);
 		countText.setText("Time Remaining: " +count+" seconds");
+	}
+	public void isPlayingSetup(boolean isPlaying)
+	{
+		//SETUP UP PLAY BUTTON STYLE
+		playButton.getStyleClass().setAll(propertyManager.getPropertyValue(PLAY_BUTTON));
+		if(isPlaying)
+			playButton.getStyleClass().setAll(propertyManager.getPropertyValue(PAUSE_BUTTON));
+		//MAKE LETTERS VISIBLE OR INVISIBLE
+		VBox centerPane 	= (VBox)gui.getAppPane().getCenter();
+		GridPane playGrid 	= (GridPane) centerPane.getChildren().get(1);
+		for(int i = 0; i < 16; i++)
+			((StackPane)playGrid.getChildren().get(i)).getChildren().get(1).setVisible(isPlaying);
+	}
+	public void updateWrdSlctDsp(String append)
+	{
+		selectedWordArea.appendText(append);
+	}
+	public void clrWrdSlctDsp(boolean all)
+	{
+		if(all)
+			selectedWordArea.clear();
+		else
+			selectedWordArea.deleteText(selectedWordArea.getText().length()-1, selectedWordArea.getText().length());
+	}
+	public void updateWrdFndDsp(String append)
+	{
+		foundWordArea.appendText(append);
+	}
+	public void updateWrdSlctOnGui(StackPane node)
+	{
+		((Circle)node.getChildren().get(0)).setFill(Paint.valueOf("blue"));
+	}
+	public void rstWrdSlctOnGui(StackPane node)
+	{
+		if(node != null)
+			((Circle)node.getChildren().get(0)).setFill(Paint.valueOf("white"));
+		else
+		{
+			GridPane grid = (GridPane)((VBox)gui.getAppPane().getCenter()).getChildren().get(1);
+			for(int i= 0; i < 16; i++)
+				((Circle)((StackPane)grid.getChildren().get(i)).getChildren().get(0)).setFill(Paint.valueOf("White"));
+		}
 	}
 	/*/***********************************************
 	 *******************GUI LOADERS*******************
@@ -191,9 +236,9 @@ public class Workspace extends AppWorkspaceComponent
 		//SETUP PLAY GRID GUI
 		GameData dataComponent = (GameData) appTemplate.getDataComponent();
 		dataComponent.setCurrentLevel(level);
-		dataComponent.setCurrentMode(mode);
-		StackPane playGrid = setupGridLevel();
+		GridPane playGrid = setupGridLevel();
 		playGrid.setPadding(new Insets(20, 0, 20, 0));
+		playGrid.setAlignment(Pos.CENTER);
 		//SETUP LEVEL LABEL
 		levelLabel.setText("Level " + level);
 		//MAKE SURE PLAY BUTTON IS SET AS PLAY BUTTON
@@ -211,21 +256,10 @@ public class Workspace extends AppWorkspaceComponent
 		trgtScoreLabel.setText("Target: " +
 				((GameData) appTemplate.getDataComponent()).getTargetScore()+ " points");
 		//VBOX FOR RIGHT PANE
-		VBox rightPane = new VBox(timeLabel,slctWordLabel, selectedWordArea, fndAreadLabel, foundWordArea, trgtScoreLabel);
+		VBox rightPane = new VBox(timeLabel,slctWordLabel, selectedWordArea, fndAreaLabel, foundWordArea, trgtScoreLabel);
 		gui.getAppPane().setRight(rightPane);
 		//DISPLAY TIMER DISPLAY
 		updateTimerDisplay(((GameData) appTemplate.getDataComponent()).getTimeAllowed());
-	}
-	public void isPlayingSetup(boolean isPlaying)
-	{
-		//SETUP UP PLAY BUTTON STYLE
-		playButton.getStyleClass().setAll(propertyManager.getPropertyValue(PLAY_BUTTON));
-		if(isPlaying)
-			playButton.getStyleClass().setAll(propertyManager.getPropertyValue(PAUSE_BUTTON));
-		//MAKE LETTERS VISIBLE OR INVISIBLE
-		VBox centerPane 	= (VBox)gui.getAppPane().getCenter();
-		StackPane playGrid 	= (StackPane) centerPane.getChildren().get(1);
-		playGrid.getChildren().get(1).setVisible(isPlaying);
 	}
 	/*/***************************************************
 	 ******************SETUP METHODS**********************
@@ -242,8 +276,14 @@ public class Workspace extends AppWorkspaceComponent
 		GridPane logo = setupLogoGrid();
 		//CREATE A HOME PANE THAT HAS THE LOGO AND AN INVISIBLE LOGIN AREA
 		StackPane homePane = new StackPane(logo, loginLayoverPane);
+		homePane.setPadding(new Insets(30, 0, 0, 0));
+		homePane.setAlignment(Pos.TOP_CENTER);
 		//SET THE HOME PANE IN THE CENTER
 		gui.getAppPane().setCenter(homePane);
+		//RIGHT PANE SPACE HOLDER
+		Region space = new Region();
+		HBox.setHgrow(space, Priority.ALWAYS);
+		gui.getAppPane().setRight(space);
 		//INITIALIZE BUTTONS AND OTHER THINGS - EVEN IF NOT ON GUI YET
 		/*BUTTONS*/
 		newAccountBttn	= new Button("Create Account");
@@ -255,7 +295,7 @@ public class Workspace extends AppWorkspaceComponent
 		gameModeMenu	= new ChoiceBox();
 		/*LABELS*/
 		slctWordLabel	= new Label("Selected Word");
-		fndAreadLabel	= new Label("Words Found");
+		fndAreaLabel	= new Label("Words Found");
 		timeLabel		= new Label();
 		trgtScoreLabel	= new Label();
 		levelLabel 		= new Label();
@@ -291,6 +331,7 @@ public class Workspace extends AppWorkspaceComponent
 			if(e.getCode().equals(KeyCode.ENTER))
 				controller.login();
 		});
+		//KEY PRESSED FOR INPUTTING GUESS WORD
 	}
 	@Override
 	public void initStyle()
@@ -321,7 +362,7 @@ public class Workspace extends AppWorkspaceComponent
 		levelLabel.getStyleClass().setAll(propertyManager.getPropertyValue(SUB_HEADER_STYLE));
 		//SETUP RIGHT PANE LABEL STYLE
 		slctWordLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
-		fndAreadLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
+		fndAreaLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
 		timeLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
 		trgtScoreLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
 		//SETUP TEXT AREA STYLE
@@ -355,7 +396,7 @@ public class Workspace extends AppWorkspaceComponent
 				homeGrid.setMargin(gridPiece, new Insets(10));
 			}
 		}
-		homeGrid.setPadding(new Insets(30, 0, 0, 50));
+		homeGrid.setAlignment(Pos.TOP_CENTER);
 		return homeGrid;
 	}
 	private StackPane setupLoginLayoverPane()
@@ -367,6 +408,7 @@ public class Workspace extends AppWorkspaceComponent
 		loginBackground.setOpacity(.8);
 		//GRID PANE FOR FIELDS AND LABELS
 		GridPane loginFields = new GridPane();
+		loginFields.setAlignment(Pos.TOP_CENTER);
 		//SETUP TEXT FIELD LABELS AND STYLE THEM
 		Label name = new Label("Username");
 		Label passwrd = new Label("Password");
@@ -390,42 +432,95 @@ public class Workspace extends AppWorkspaceComponent
 		loginFields.setHgap(10);
 		//LETS ADD THE FIELDS TO THE STACK PANE
 		loginLayoverPane.getChildren().addAll(loginBackground, loginFields);
-		loginLayoverPane.setAlignment(loginBackground, Pos.TOP_LEFT);
+		loginLayoverPane.setMaxHeight(160);
 		loginLayoverPane.setVisible(false);
-		loginLayoverPane.setPadding(new Insets(30, 0, 0, 50));
+		loginLayoverPane.setAlignment(Pos.CENTER);
 		return loginLayoverPane;		//return finished invisible pane
 	}
-	private StackPane setupGridLevel()
+	public GridPane setupGridLevel()
 	{
-		StackPane playGrid = new StackPane();
-		playGrid.setAlignment(Pos.CENTER);
-		GridPane letterGrid = new GridPane();
-		letterGrid.setAlignment(Pos.CENTER);
-		GridPane circleGrid = new GridPane();
-		circleGrid.setAlignment(Pos.CENTER);
+		BuzzwordController controller = (BuzzwordController)gui.getFileController();
+		//grid playing grid
+		GridPane gridGame = new GridPane();
+		//each individual grid pieces
+		StackPane gridPiece;
+		//background of letters
 		Circle container;
-
+		//set up the letters
 		GameData dataComponent = (GameData) appTemplate.getDataComponent();
-		Text[][] letter = new Text[4][4];
+		Label[][] letter = new Label[4][4];
 		ArrayList gridLetters = dataComponent.initPlayGrid();
-
+		//create and put all 16 gid pieces into grid
 		for(int i = 0; i<4; i++)
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				letter[i][j] = new Text(gridLetters.get(j+i*4).toString());
-				//circle grid
+				int finalI = i;
+				int finalJ = j;
+				//white circle for background
 				container = new Circle(30, Paint.valueOf("white"));
-				circleGrid.add(container, i, j);
-				circleGrid.setMargin(container, new Insets(10));
-				//letter grid
+				//letter set up
+				letter[i][j] = new Label(gridLetters.get(j+i*4).toString());
 				letter[i][j].getStyleClass().setAll(propertyManager.getPropertyValue(LETTER_STYLE));
-				letterGrid.add(letter[i][j], j, i);
-				letterGrid.setMargin(letter[i][j], new Insets(30, 27, 25, 32));
+				letter[i][j].setVisible(false);
+				//grid piece setup
+				gridPiece = new StackPane(container, letter[i][j]);
+				StackPane gridPieceF = gridPiece;
+				//get up handlers for drag events
+				gridPiece.setOnMouseDragEntered(e -> controller.nodeSelected(gridPieceF));
+				gridPiece.setOnMouseClicked(e -> controller.nodeSelected(gridPieceF));
+				gridPiece.setOnDragDetected(e -> gridPieceF.startFullDrag());
+				gridPiece.setOnMouseDragReleased(e -> controller.dragEnd(selectedWordArea.getText()));
+				//add grid pieces to grid
+				gridGame.add(gridPiece, j, i);
+				gridGame.setMargin(gridPiece, new Insets(10));
 			}
 		}
-		letterGrid.setVisible(false);
-		playGrid.getChildren().addAll(circleGrid, letterGrid);
-		return playGrid;
+		return gridGame;
 	}
+//	private StackPane setupGridLevel(int h)
+//	{
+//		BuzzwordController controller = (BuzzwordController)gui.getFileController();
+//		StackPane playGrid = new StackPane();
+//		playGrid.setAlignment(Pos.CENTER);
+//		GridPane letterGrid = new GridPane();
+//		letterGrid.setAlignment(Pos.CENTER);
+//		GridPane circleGrid = new GridPane();
+//		circleGrid.setAlignment(Pos.CENTER);
+//		Circle container;
+//
+//		GameData dataComponent = (GameData) appTemplate.getDataComponent();
+//		Label[][] letter = new Label[4][4];
+//		ArrayList gridLetters = dataComponent.initPlayGrid();
+//
+//		for(int i = 0; i<4; i++)
+//		{
+//			for(int j = 0; j < 4; j++)
+//			{
+//				letter[i][j] = new Label(gridLetters.get(j+i*4).toString());
+//				int finalI = i;
+//				int finalJ = j;
+//				//circle grid
+//				container = new Circle(30, Paint.valueOf("white"));
+//				Circle containerF = container;
+//				letter[i][j].setOnMousePressed(e -> controller.nodeSelected(letter[finalI][finalJ].getText()));
+//				letter[i][j].setOnMouseDragEntered(e -> controller.nodeSelected(letter[finalI][finalJ].getText()));
+//				letter[i][j].setOnDragDetected(e ->
+//				{
+//					containerF.startFullDrag();
+//					controller.nodeSelected(letter[finalI][finalJ].getText());
+//				});
+//
+//				circleGrid.add(container, i, j);
+//				circleGrid.setMargin(container, new Insets(10));
+//				//letter grid
+//				letter[i][j].getStyleClass().setAll(propertyManager.getPropertyValue(LETTER_STYLE));
+//				letterGrid.add(letter[i][j], j, i);
+//				letterGrid.setMargin(letter[i][j], new Insets(30, 27, 25, 32));
+//			}
+//		}
+//		letterGrid.setVisible(false);
+//		playGrid.getChildren().addAll(circleGrid, letterGrid);
+//		return playGrid;
+//	}
 }

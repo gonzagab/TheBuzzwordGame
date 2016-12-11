@@ -5,10 +5,10 @@ package gamelogic;
  */
 public enum GameMode
 {
-	ENGLISH_DICTIONARY	("English Dictionary", 	0, "englishdictionary", 10),
-	FAMOUS_PEOPLE		("Famous People", 		1, "famouspeople", 		10),
-	SCIENCE				("Science",		 		2, "science", 			10),
-	PLACES				("Places", 				3, "places", 			10);
+	ENGLISH_DICTIONARY	("English Dictionary", 	0, "englishdictionary", 8),
+	FAMOUS_PEOPLE		("Animals",		 		1, "animals", 			8),
+	SCIENCE				("Science",		 		2, "science", 			8),
+	PLACES				("Places", 				3, "places", 			8);
 	//FIELDS FOR EACH MODE
 	String 	literal;
 	String 	folder;

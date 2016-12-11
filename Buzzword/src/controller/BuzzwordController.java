@@ -1,6 +1,7 @@
 package controller;
 
 import apptemplate.AppTemplate;
+import com.sun.corba.se.pept.transport.EventHandler;
 import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import data.GameData;
 import data.GameDataFile;
@@ -11,11 +12,14 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.Event;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import propertymanager.PropertyManager;
@@ -24,6 +28,8 @@ import ui.AppMessageDialogSingleton;
 import ui.YesNoCancelDialogSingleton;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.Stack;
 
 import static gamelogic.GameMode.*;
 import static settings.AppPropertyType.*;
@@ -35,11 +41,15 @@ public class BuzzwordController implements FileController
 {
 	private AppTemplate	app;		//reference to the app
 	private GameData 	gameData;
-	private boolean 	isPlaying; 		//Indicates if a game is currently being played
-	private boolean 	startedPlaying;	//indicate if
+	//Flags indicating wats going on through out the game
+	private boolean 	isPlaying; 		//Indicates if a game is currently in play mode
+	private boolean 	startedPlaying;	//indicate if a game has started
 	private boolean 	savable; 		//indicate whether savable or not
 	private Timeline 	timeline;
 	private int 		counter;
+	//used to verify word input
+	LinkedList<StackPane>	wordInProgress;	//Nodes tha have been visited
+	StackPane				preNode;
 	/*/**************************
 	 ********CONSTRUCTOR*********
 	 ****************************/
@@ -53,6 +63,8 @@ public class BuzzwordController implements FileController
 		//SETUP TIME COUNT
 		timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> counterMethod()));
 		timeline.setCycleCount(counter);
+		//setup variables needed
+		wordInProgress = new LinkedList<>();
 	}
 	@Override
 	public void handleSaveRequest() throws IOException
@@ -225,10 +237,10 @@ public class BuzzwordController implements FileController
 	 ****************************/
 	public void handleLevelSelect(int selected)
 	{
-		GameData data = (GameData) app.getDataComponent();
-		UserProfile user = data.getUser();
+		UserProfile user = gameData.getUser();
 		GameMode mode = GameMode.values()[selected];
-		((Workspace) app.getWorkspaceComponent()).loadModeSelectorGUI(mode, 10, user.getModeProgress(mode));
+		gameData.setCurrentMode(mode);
+		((Workspace) app.getWorkspaceComponent()).loadModeSelectorGUI(mode, mode.totalLevels(), user.getModeProgress(mode));
 	}
 	/*/***************************
 	 ****HOME / LOGOUT REQUESTS***
@@ -276,6 +288,43 @@ public class BuzzwordController implements FileController
 			timeline.pause();
 		else
 			timeline.play();
+	}
+	public void nodeSelected(StackPane gridPiece)
+	{
+		//check that the player is actually playing
+		if(!isPlaying)
+			return;
+		//check if user is trying to go back
+		if(gridPiece == preNode )
+		{
+			((Workspace)app.getWorkspaceComponent()).rstWrdSlctOnGui(wordInProgress.removeLast());
+			StackPane temp = wordInProgress.removeLast();
+			preNode = wordInProgress.peekLast();
+			wordInProgress.add(temp);
+			System.out.println("Handle reverse movement");
+			((Workspace)app.getWorkspaceComponent()).clrWrdSlctDsp(false);
+			return;
+		}
+		//check for cycles
+		if(wordInProgress.contains(gridPiece))
+			return;
+		//check that node is adjacent.
+		//all test passed
+		System.out.println("Letter: " + gridPiece.getChildren().get(1).toString() +  " Activated");
+		preNode = wordInProgress.peekLast();
+		wordInProgress.add(gridPiece);
+		((Workspace)app.getWorkspaceComponent()).updateWrdSlctDsp(((Label)gridPiece.getChildren().get(1)).getText());
+		((Workspace)app.getWorkspaceComponent()).updateWrdSlctOnGui(gridPiece);
+	}
+	public void dragEnd(String wordFound)
+	{
+		if(gameData.addFoundWord(wordFound))
+			((Workspace)app.getWorkspaceComponent()).updateWrdFndDsp(wordFound);
+		((Workspace)app.getWorkspaceComponent()).clrWrdSlctDsp(true);
+		((Workspace)app.getWorkspaceComponent()).rstWrdSlctOnGui(null);
+		wordInProgress.clear();
+		preNode = null;
+		System.out.println("Drag done");
 	}
 	public void counterMethod()
 	{

@@ -10,10 +10,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
+import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 /**
@@ -21,19 +19,22 @@ import java.util.stream.Stream;
  */
 public class GameData implements AppDataComponent
 {
-	public final int TOTAL_NUMBER_OF_STORED_WORDS = 100;
 	private GameMode 	currentMode;		//Indicates the current mode
 	private int			currentLevel;		//Indicates the current level
 	private int			timeAllowed;		//Indicates how much time is allowed for the level in seconds
 	private ArrayList<LetterNode> playingGrid;	//The actual grid itself
 	private int			targetScore;		//Score needed to reach to pass level
 	private int			currentScore;		//Score currently at
-	private Set<String> goodWords;
 	private UserProfile	user;				//information of the current player
+	//WORD SETS FOR GAME PLAY
+	private Set<String> goodWords;
+	private Set<String> wordFounds;
+	private Set<String>[] dictionary;
 
 	public GameData()
 	{
 		goodWords = new HashSet<>();
+		wordFounds = new HashSet<>();
 		initPlayingGrid();
 		targetScore = 0;
 		timeAllowed = 60;
@@ -48,116 +49,6 @@ public class GameData implements AppDataComponent
 	@Override
 	public void reset()
 	{
-	}
-	private void generatePlayingGrid()
-	{
-		//URL TO WORDS
-		URL wordsResource = getClass().getClassLoader()
-				.getResource("words/" + currentMode.getFolder() + "/" + integerToString(currentLevel) + ".txt");
-		assert wordsResource != null;
-		//VARIABLES TO HELP PLACE WORD
-		boolean letterPlaced;		//indicates if letter was successfully placed
-		boolean wordPlaced;			//indicates if word was successfully placed
-		String word = "HOWDY";
-		boolean visited;			//indicates of node was visited by a word
-		int toSkip;					//random number to get word form file
-		int offset;		//one through 8. corresponds to the linked array nodes
-		int nodePos;	//the current pos. 1 - 16. 16 nodes in array list
-		int[] visitedNode = new int[currentLevel + 4];
-		int[] offsetVal = {-4, -3, 1, 5, 4, 3, -1, -5};
-
-		for(int manyWords = 0; manyWords < 10; manyWords++)
-		{
-			//REST NODES VISITED
-			for(int i = 0; i < visitedNode.length; i++)
-				visitedNode[i] = -1;
-			//GET A RANDOM WORD
-			toSkip = new Random().nextInt(TOTAL_NUMBER_OF_STORED_WORDS);
-			try(Stream<String> lines = Files.lines(Paths.get(wordsResource.toURI())))
-			{
-				word = lines.skip(toSkip).findFirst().get();
-				word = word.toUpperCase();
-			}catch(IOException | URISyntaxException e)
-			{
-				e.printStackTrace();
-				System.exit(1);
-			}
-			//RANDOMLY START AT A NODE IN GRID
-			nodePos = ((int) (Math.random() * 16));        //range from 0 - 15
-			//REST WORD PLACE BOOLEAN
-			wordPlaced = true;
-			//PLACE WORD
-			for(int i = 0; i < word.length(); i++)
-			{
-				letterPlaced = false;
-				//GET NEXT NODE POSITION
-				/* FIRST CREATE OFFSET */
-				offset = (int) (Math.random() * 8); //random offset to begin at 0 - 8 adjacent nodes
-				/* THEN CHECK OFFSET NODE */
-				for(int j = 0; j < 8; j++)    // because there are 8 adjacent nodes
-				{
-					//CHECK FOR OVERFLOW AND THAT OFFSET IS IN RANGE
-					int count = 0;	//count loops
-					while(playingGrid.get(nodePos).getAdjacentNode(offset) == null)
-					{
-						j += count++;
-						offset++;
-						if(offset > 7)
-							offset = 0;
-					}
-					//CHECK THAT NODE HASN'T BEEN VISITED BEFORE
-					visited = false;
-					for(int k = 0; k < i; k++)
-						if(visitedNode[k] == (nodePos + offsetVal[offset]))
-						{
-							visited = true;
-							//NEW OFFSET - increment to next node
-							offset++;
-							if(offset > 7)
-								offset = 0;
-							break;            //NO NEED TO CONTINUE LOOKING
-						}
-					if(!visited)
-					{
-						if(playingGrid.get(nodePos).getAdjacentNode(offset).getLetter() == '-')    //IF EMPTY
-						{
-							j = 10;        //NO NEED TO LOOK INTO OTHER NODES
-							nodePos += offsetVal[offset];
-							//visitedNode[i] = nodePos;
-							letterPlaced = true;
-
-						}
-						else if(playingGrid.get(nodePos).getAdjacentNode(offset).getLetter() == word.charAt(i)) //IF SAME LETTER IS THERE
-						{
-							j = 10;        //NO NEED TO LOOK INTO OTHER NODES
-							nodePos += offsetVal[offset];
-							//visitedNode[i] = nodePos;
-							letterPlaced = true;
-						}
-						else            //IF A DIFFERENT LETTER IS THERE
-						{
-							//NEW OFFSET
-							offset++;
-							if(offset > 7)
-								offset = 0;
-						}
-					}
-				}
-				//PLACE LETTER INTO NODE - random beginner node or adjacent node
-				if(letterPlaced)
-				{
-					playingGrid.get(nodePos).setLetter(word.charAt(i));
-					visitedNode[i] = nodePos;    //save where letter was placed
-				}
-				else
-					wordPlaced = false;
-			}
-			System.out.println(word +" - "+ wordPlaced);
-			//CALCULATE SCORE
-			if(wordPlaced)
-				targetScore += word.length()*2;
-		}
-		targetScore /= 2;
 	}
 	/*/******************************
 	 *********GETTER METHODS*********
@@ -187,17 +78,31 @@ public class GameData implements AppDataComponent
 	/*/******************************
 	 *********SETTER METHODS*********
 	 ********************************/
+	public boolean addFoundWord(String wordUT)
+	{
+		System.out.println("FUCUCUCUCCUCUCCKCKKKK--- " + wordUT);
+		if(goodWords.contains(wordUT))
+		{
+			wordFounds.add(wordUT);
+			System.out.println("good word");
+			return true;
+		}
+		else
+			return false;
+	}
 	public void setCurrentLevel(int currentLevel)
 	{
 		this.currentLevel = currentLevel;
 	}
-	public void setCurrentMode(GameMode currentMode)
-	{
-		this.currentMode = currentMode;
-	}
 	public void setUser(UserProfile user)
 	{
 		this.user = user;
+	}
+	public void setCurrentMode(GameMode currentMode)
+	{
+		this.currentMode = currentMode;
+		dictionary = new HashSet[currentMode.totalLevels()];
+		loadDictionary();
 	}
 	/*/******************************
 	 *****PRIVATE HELPER METHODS*****
@@ -340,5 +245,130 @@ public class GameData implements AppDataComponent
 		playingGrid.get(15).setAdjacentNode(playingGrid.get(11), 0);
 		playingGrid.get(15).setAdjacentNode(playingGrid.get(14), 6);
 		playingGrid.get(15).setAdjacentNode(playingGrid.get(10), 7);
+	}
+	private void generatePlayingGrid()
+	{
+		//VARIABLES TO HELP PLACE WORD
+		boolean letterPlaced;		//indicates if letter was successfully placed
+		boolean wordPlaced;			//indicates if word was successfully placed
+		boolean visited;			//indicates of node was visited by a word
+		String word;				//the actual word to be placed
+		int toSkip;					//random number to get word from dictionary
+		int offset;		//one through 8. corresponds to the linked array nodes
+		int nodePos;	//the current pos. 1 - 16. 16 nodes in array list
+		int[] visitedNode = new int[currentLevel + 4];
+		int[] offsetVal = {-4, -3, 1, 5, 4, 3, -1, -5};
+		//FILL THE GRID
+		for(int manyWords = 0; manyWords < 100; manyWords++)
+		{
+			//RESET NODES VISITED
+			for(int i = 0; i < visitedNode.length; i++)
+				visitedNode[i] = -1;
+			//GET A RANDOM WORD
+			toSkip = new Random().nextInt(dictionary[currentLevel].size());
+			word = (String) dictionary[currentLevel].toArray()[toSkip];
+			word = word.toUpperCase();
+			//RANDOMLY START AT A NODE IN GRID
+			nodePos = ((int) (Math.random() * 16));        //range from 0 - 15
+			//REST WORD PLACE BOOLEAN
+			wordPlaced = true;
+			//PLACE WORD
+			for(int i = 0; i < word.length(); i++)
+			{
+				letterPlaced = false;
+				//GET NEXT NODE POSITION
+				/* FIRST CREATE OFFSET */
+				offset = (int) (Math.random() * 8); //random offset to begin at 0 - 8 adjacent nodes
+				/* THEN CHECK OFFSET NODE */
+				for(int j = 0; j < 8; j++)    // because there are 8 adjacent nodes
+				{
+					//CHECK FOR OVERFLOW AND THAT OFFSET IS IN RANGE
+					int count = 0;	//count loops
+					while(playingGrid.get(nodePos).getAdjacentNode(offset) == null)
+					{
+						j += count++;
+						offset++;
+						if(offset > 7)
+							offset = 0;
+					}
+					//CHECK THAT NODE HASN'T BEEN VISITED BEFORE
+					visited = false;
+					for(int k = 0; k < i; k++)
+						if(visitedNode[k] == (nodePos + offsetVal[offset]))
+						{
+							visited = true;
+							//NEW OFFSET - increment to next node
+							offset++;
+							if(offset > 7)
+								offset = 0;
+							break;            //NO NEED TO CONTINUE LOOKING
+						}
+					if(!visited)
+					{
+						if(playingGrid.get(nodePos).getAdjacentNode(offset).getLetter() == '-')    //IF EMPTY
+						{
+							j = 10;        //NO NEED TO LOOK INTO OTHER NODES
+							nodePos += offsetVal[offset];
+							//visitedNode[i] = nodePos;
+							letterPlaced = true;
+
+						}
+						else if(playingGrid.get(nodePos).getAdjacentNode(offset).getLetter() == word.charAt(i)) //IF SAME LETTER IS THERE
+						{
+							j = 10;        //NO NEED TO LOOK INTO OTHER NODES
+							nodePos += offsetVal[offset];
+							//visitedNode[i] = nodePos;
+							letterPlaced = true;
+						}
+						else            //IF A DIFFERENT LETTER IS THERE
+						{
+							//NEW OFFSET
+							offset++;
+							if(offset > 7)
+								offset = 0;
+						}
+					}
+				}
+				//PLACE LETTER INTO NODE - random beginner node or adjacent node
+				if(letterPlaced)
+				{
+					playingGrid.get(nodePos).setLetter(word.charAt(i));
+					visitedNode[i] = nodePos;    //save where letter was placed
+				}
+				else
+					wordPlaced = false;
+			}
+			System.out.println(word +" - "+ wordPlaced);
+			//CALCULATE SCORE
+			if(wordPlaced)
+			{
+				goodWords.add(word);
+				targetScore += word.length() * 2;
+			}
+		}
+		targetScore /= 2;
+	}
+	private void loadDictionary()
+	{
+		String folder = currentMode.getFolder();
+		for(int i = 0; i < currentMode.totalLevels(); i++)
+		{
+			dictionary[i] = new HashSet<>();
+			//URL TO WORDS
+			URL wordsResource = getClass().getClassLoader()
+					.getResource("words/" + folder + "/" + integerToString(i) + ".txt");
+			assert wordsResource != null;
+			try(Stream<String> lines = Files.lines(Paths.get(wordsResource.toURI())))
+			{
+				Iterator<String> words = lines.iterator();
+				while(words.hasNext())
+				{
+					dictionary[i].add(words.next());
+				}
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 }
