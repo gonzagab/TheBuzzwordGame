@@ -135,6 +135,7 @@ public class Workspace extends AppWorkspaceComponent
 	public void updateWrdFndDsp(String append)
 	{
 		foundWordArea.appendText(append);
+		foundWordArea.appendText("\n");
 	}
 	public void updateWrdSlctOnGui(StackPane node)
 	{
@@ -260,6 +261,25 @@ public class Workspace extends AppWorkspaceComponent
 		gui.getAppPane().setRight(rightPane);
 		//DISPLAY TIMER DISPLAY
 		updateTimerDisplay(((GameData) appTemplate.getDataComponent()).getTimeAllowed());
+
+		//KEY PRESSED FOR INPUTTING GUESS WORD
+		GridPane tempGrid = (GridPane)((VBox)gui.getAppPane().getCenter()).getChildren().get(1);
+		gui.getPrimaryScene().setOnKeyTyped(event ->
+		{
+			char guess = event.getCharacter().charAt(0);
+			if(guess > 96 && guess < 123)
+				guess -= 32;
+			if(guess > 64 && guess < 91)
+			{
+				for(int i = 0; i < 16; i++)
+				{
+					StackPane  node = (StackPane)tempGrid.getChildren().get(i);
+					String letter = ((Label)node.getChildren().get(1)).getText();
+					if(letter.charAt(0) == guess)
+						((BuzzwordController)gui.getFileController()).nodeSelected(node);
+				}
+			}
+		});
 	}
 	/*/***************************************************
 	 ******************SETUP METHODS**********************
@@ -331,7 +351,6 @@ public class Workspace extends AppWorkspaceComponent
 			if(e.getCode().equals(KeyCode.ENTER))
 				controller.login();
 		});
-		//KEY PRESSED FOR INPUTTING GUESS WORD
 	}
 	@Override
 	public void initStyle()

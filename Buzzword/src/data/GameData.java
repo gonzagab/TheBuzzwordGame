@@ -338,7 +338,6 @@ public class GameData implements AppDataComponent
 				else
 					wordPlaced = false;
 			}
-			System.out.println(word +" - "+ wordPlaced);
 			//CALCULATE SCORE
 			if(wordPlaced)
 			{
@@ -347,6 +346,7 @@ public class GameData implements AppDataComponent
 			}
 		}
 		targetScore /= 2;
+		solveGrid();
 	}
 	private void loadDictionary()
 	{
@@ -370,5 +370,81 @@ public class GameData implements AppDataComponent
 				e.printStackTrace();
 			}
 		}
+	}
+	private boolean endOfWord;
+	private Set<LetterNode> visitedNodes;
+	private void solveGrid()
+	{
+		System.out.println("Solving Grid");
+		String word;
+		LetterNode currentNode;
+		int index;
+		boolean wordPossible;
+		//CHECK ALL WORDS IN DICTIONARY
+		for(int i = 0; i < dictionary[currentLevel].toArray().length; i++)
+		{
+			word = (String)dictionary[currentLevel].toArray()[i];
+			//RESET VISITED NODES FOR WORD
+			visitedNodes = new HashSet<>();
+			//END OF WORD RESET; WORD HAS NOT REACHED THE END
+			endOfWord = false;
+			wordPossible = true;
+			word = word.toUpperCase();
+			//IF ANY OF THE LETTERS IN A WORD ARE NOT IN THE GRID THEN, NEXT WORD
+			for(int j = 0; j < word.length(); j++)
+				if(!playingGrid.contains(new LetterNode(word.charAt(j))))
+				{
+					wordPossible = false; ///WORD CAN NOT BE IN GRID
+					break;
+				}
+			if(wordPossible)
+			{
+				//initialize starting point
+				index = 0;
+				while(playingGrid.get(index).getLetter() != word.charAt(0))
+					index++;
+				currentNode = playingGrid.get(index);
+				visitedNodes.add(currentNode);
+				nextNode(word.substring(1), currentNode);
+				if(endOfWord)
+				{
+					System.out.println(word);
+					goodWords.add(word);
+				}
+			}
+		}
+		System.out.println("End of Solving Grid");
+	}
+	private void nextNode(String word, LetterNode currentNode)
+	{
+		//CHECK IF WE REACHED THE END
+		if(word.equals("") || word == null)
+			endOfWord = true;
+		//ON THE WAY OUT
+		if(endOfWord)
+			return;
+		visitedNodes.add(currentNode);
+		//CHECK ALL ADJACENT NODES TO CURRENT NODE
+		for(int k = 0; k < 8; k++)
+		{
+			//check for null adjacent nodes
+			while(currentNode.getAdjacentNode(k) == null)
+			{
+				k++;
+				if(k>7)
+					break;
+			}
+			if(k>7)
+				continue;
+			//ADJACENT NODE FOUND
+			if(currentNode.getAdjacentNode(k).getLetter() == word.charAt(0))
+			{
+				nextNode(word.substring(1), currentNode.getAdjacentNode(k));
+				//DID WE EACH THE END?
+				if(endOfWord)
+					return;
+			}
+		}
+		visitedNodes.remove(currentNode);
 	}
 }

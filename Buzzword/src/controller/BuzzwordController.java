@@ -301,7 +301,6 @@ public class BuzzwordController implements FileController
 			StackPane temp = wordInProgress.removeLast();
 			preNode = wordInProgress.peekLast();
 			wordInProgress.add(temp);
-			System.out.println("Handle reverse movement");
 			((Workspace)app.getWorkspaceComponent()).clrWrdSlctDsp(false);
 			return;
 		}
@@ -310,7 +309,6 @@ public class BuzzwordController implements FileController
 			return;
 		//check that node is adjacent.
 		//all test passed
-		System.out.println("Letter: " + gridPiece.getChildren().get(1).toString() +  " Activated");
 		preNode = wordInProgress.peekLast();
 		wordInProgress.add(gridPiece);
 		((Workspace)app.getWorkspaceComponent()).updateWrdSlctDsp(((Label)gridPiece.getChildren().get(1)).getText());
@@ -324,7 +322,6 @@ public class BuzzwordController implements FileController
 		((Workspace)app.getWorkspaceComponent()).rstWrdSlctOnGui(null);
 		wordInProgress.clear();
 		preNode = null;
-		System.out.println("Drag done");
 	}
 	public void counterMethod()
 	{

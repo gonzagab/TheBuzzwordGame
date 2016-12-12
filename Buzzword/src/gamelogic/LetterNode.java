@@ -24,9 +24,9 @@ public class LetterNode
 		this.adjacentNode = adjacentNode;
 		this.letter = letter;
 	}
-	/*/*****************************
-	 *********GETTER METHODS********
-	 *******************************/
+	/*/****************************
+	*********GETTER METHODS********
+	******************************/
 	public char getLetter()
 	{
 		return letter;
@@ -40,9 +40,9 @@ public class LetterNode
 	{
 		return String.valueOf(letter);
 	}
-	/*/*****************************
-		 ********SETTER METHODS*********
-		 *******************************/
+	/*/****************************
+	********SETTER METHODS*********
+	******************************/
 	public void setAdjacentNode(LetterNode[] adjacentNode)
 	{
 		this.adjacentNode = adjacentNode;
@@ -58,5 +58,12 @@ public class LetterNode
 	public void setAdjacentLetter(char letter, int side)
 	{
 		adjacentNode[side] = new LetterNode(letter);
+	}
+	public boolean equals(Object o)
+	{
+		if(((LetterNode)o).getLetter() == this.getLetter())
+			return true;
+		else
+			return false;
 	}
 }
