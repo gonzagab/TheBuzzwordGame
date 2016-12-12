@@ -14,6 +14,7 @@ public class UserProfile
 	*****USER PROGRESS INFO*****
 	****************************/
 	private int[] progress;
+	private int[] bestScores;
 	/*/*************************
 	********CONSTRUCTORS********
 	 ***************************/

@@ -5,13 +5,10 @@ import gamelogic.GameMode;
 import gamelogic.LetterNode;
 import gamelogic.UserProfile;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 /**
@@ -28,16 +25,17 @@ public class GameData implements AppDataComponent
 	private UserProfile	user;				//information of the current player
 	//WORD SETS FOR GAME PLAY
 	private Set<String> goodWords;
-	private Set<String> wordFounds;
+	private Set<String> wordsFound;
 	private Set<String>[] dictionary;
 
 	public GameData()
 	{
 		goodWords = new HashSet<>();
-		wordFounds = new HashSet<>();
+		wordsFound = new HashSet<>();
 		initPlayingGrid();
 		targetScore = 0;
-		timeAllowed = 60;
+		timeAllowed = 30;
+		currentScore = 0;
 	}
 	public ArrayList<LetterNode> initPlayGrid()
 	{
@@ -49,6 +47,10 @@ public class GameData implements AppDataComponent
 	@Override
 	public void reset()
 	{
+		currentScore = 0;
+		targetScore = 0;
+		goodWords = new HashSet<>();
+		wordsFound = new HashSet<>();
 	}
 	/*/******************************
 	 *********GETTER METHODS*********
@@ -69,6 +71,22 @@ public class GameData implements AppDataComponent
 	{
 		return targetScore;
 	}
+	public int getCurrentScore()
+	{
+		return currentScore;
+	}
+	public Set<String> getWordsFound()
+	{
+		return wordsFound;
+	}
+	public Set<String> getGoodWords()
+	{
+		return goodWords;
+	}
+	public int getCurrentLevel()
+	{
+		return currentLevel;
+	}
 	public UserProfile getUser()
 	{
 		if(user == null)
@@ -80,11 +98,10 @@ public class GameData implements AppDataComponent
 	 ********************************/
 	public boolean addFoundWord(String wordUT)
 	{
-		System.out.println("FUCUCUCUCCUCUCCKCKKKK--- " + wordUT);
-		if(goodWords.contains(wordUT))
+		if(goodWords.contains(wordUT) && !wordsFound.contains(wordUT))
 		{
-			wordFounds.add(wordUT);
-			System.out.println("good word");
+			wordsFound.add(wordUT);
+			currentScore += wordUT.length()*2;
 			return true;
 		}
 		else

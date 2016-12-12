@@ -3,6 +3,7 @@ package controller;
 import apptemplate.AppTemplate;
 import com.sun.corba.se.pept.transport.EventHandler;
 import com.sun.corba.se.spi.orbutil.threadpool.Work;
+import com.sun.deploy.config.Platform;
 import data.GameData;
 import data.GameDataFile;
 import gamelogic.GameMode;
@@ -13,7 +14,9 @@ import javafx.animation.Timeline;
 import javafx.event.Event;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -28,6 +31,7 @@ import ui.AppMessageDialogSingleton;
 import ui.YesNoCancelDialogSingleton;
 
 import java.io.*;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -62,6 +66,7 @@ public class BuzzwordController implements FileController
 		counter = gameData.getTimeAllowed();
 		//SETUP TIME COUNT
 		timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> counterMethod()));
+		timeline.setOnFinished(event -> handleEndGame());
 		timeline.setCycleCount(counter);
 		//setup variables needed
 		wordInProgress = new LinkedList<>();
@@ -250,11 +255,15 @@ public class BuzzwordController implements FileController
 		if(startedPlaying)
 		{
 			//VARIABLES NEEDED TO RESET LEVEL
-			counter = gameData.getTimeAllowed();
-			isPlaying = false;
-			startedPlaying = false;
+			counter 		= gameData.getTimeAllowed();
+			isPlaying 		= false;
+			startedPlaying 	= false;
 			//RESET TIMER
 			timeline.stop();
+			//RESET GAME DATA
+			gameData.reset();
+			//RESET FOUND WORDS
+			((TextArea)((VBox)app.getGUI().getAppPane().getRight()).getChildren().get(4)).clear();
 		}
 		app.getWorkspaceComponent().reloadWorkspace();
 	}
@@ -269,7 +278,12 @@ public class BuzzwordController implements FileController
 		//RESET TIMER
 		timeline.stop();
 		timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> counterMethod()));
+		timeline.setOnFinished(event -> handleEndGame());
 		timeline.setCycleCount(counter);
+		//RESET GAME DATA
+		gameData.reset();
+		//RESET FOUND WORDS
+		((TextArea)((VBox)app.getGUI().getAppPane().getRight()).getChildren().get(4)).clear();
 		//RESET HOME GUI - SIDEBAR
 		((Workspace) app.getWorkspaceComponent()).reloadHomeGuiSidebar();
 		//RESET HOME GUI - LEVEL SELECTOR
@@ -308,6 +322,7 @@ public class BuzzwordController implements FileController
 		if(wordInProgress.contains(gridPiece))
 			return;
 		//check that node is adjacent.
+
 		//all test passed
 		preNode = wordInProgress.peekLast();
 		wordInProgress.add(gridPiece);
@@ -317,7 +332,10 @@ public class BuzzwordController implements FileController
 	public void dragEnd(String wordFound)
 	{
 		if(gameData.addFoundWord(wordFound))
-			((Workspace)app.getWorkspaceComponent()).updateWrdFndDsp(wordFound);
+		{
+			((Workspace) app.getWorkspaceComponent()).updateWrdFndDsp(wordFound + "     | " + wordFound.length()*2);
+			((Workspace) app.getWorkspaceComponent()).updateScore(gameData.getCurrentScore());
+		}
 		((Workspace)app.getWorkspaceComponent()).clrWrdSlctDsp(true);
 		((Workspace)app.getWorkspaceComponent()).rstWrdSlctOnGui(null);
 		wordInProgress.clear();
@@ -327,6 +345,46 @@ public class BuzzwordController implements FileController
 	{
 		counter--;
 		((Workspace)app.getWorkspaceComponent()).updateTimerDisplay(counter);
+	}
+	/*/**********************
+	*****HANDLE END GAME*****
+	************************/
+	public void handleEndGame()
+	{
+		GridPane temp = (GridPane)((VBox)app.getGUI().getAppPane().getCenter()).getChildren().get(1);
+		for(int i = 0; i<16; i++)
+			temp.getChildren().get(i).setDisable(true);
+		AppMessageDialogSingleton endMessage = AppMessageDialogSingleton.getSingleton();
+		endMessage.init(app.getGUI().getWindow());
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("Words Found:\n");
+		Iterator<String> wf = gameData.getWordsFound().iterator();
+		Iterator<String> gw = gameData.getGoodWords().iterator();
+		while(wf.hasNext())
+			sb.append(wf.next() + "\n");
+		sb.append("All Possible Words in Grid:\n");
+		while(gw.hasNext())
+			sb.append(gw.next() + "\n");
+		sb.append("Total Score: " + gameData.getCurrentScore());
+		//CHECK TO SAVE
+		if(gameData.getCurrentScore() >= gameData.getTargetScore())
+		{
+			System.out.println("Winner winner chicken din din");
+			if(gameData.getCurrentLevel() >= gameData.getUser().getModeProgress(gameData.getCurrentMode()))
+				gameData.getUser().updateModeProgress(gameData.getCurrentMode(), gameData.getCurrentLevel()+1);
+			File userFile = new File("Buzzword/saved/" + gameData.getUser().getUsername() + ".json");
+			try
+			{
+				BufferedWriter bf = new BufferedWriter(new FileWriter(userFile));
+				app.getFileComponent().saveData(app.getDataComponent(), userFile.toPath());
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		gameData.reset();
+		endMessage.show("End of Game", sb.toString());
 	}
 	/*/**********************
 	 *****PROMPT METHODS*****

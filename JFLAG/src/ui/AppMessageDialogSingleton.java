@@ -38,7 +38,7 @@ public class AppMessageDialogSingleton extends Stage {
      * @return The one singleton dialog of this object type.
      */
     public static AppMessageDialogSingleton getSingleton() {
-        if (singleton == null)
+        //if (singleton == null)
             singleton = new AppMessageDialogSingleton();
         return singleton;
     }
@@ -92,6 +92,6 @@ public class AppMessageDialogSingleton extends Stage {
         // AND OPEN UP THIS DIALOG, MAKING SURE THE APPLICATION
         // WAITS FOR IT TO BE RESOLVED BEFORE LETTING THE USER
         // DO MORE WORK.
-        showAndWait();
+        show();
     }
 }

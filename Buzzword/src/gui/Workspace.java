@@ -51,6 +51,7 @@ public class Workspace extends AppWorkspaceComponent
 	Label			slctWordLabel;	//label for the selected word
 	Label			fndAreaLabel;	//label for the found word area
 	Label			timeLabel;		//label for time remaining
+	Label			scoreLabel;		//label for current score
 	Label			trgtScoreLabel;	//holds the target score
 			/*TEXT  AREAS*/
 	TextArea 			selectedWordArea;//area will hold the word the user has guessd
@@ -140,6 +141,10 @@ public class Workspace extends AppWorkspaceComponent
 	public void updateWrdSlctOnGui(StackPane node)
 	{
 		((Circle)node.getChildren().get(0)).setFill(Paint.valueOf("blue"));
+	}
+	public void updateScore(int score)
+	{
+		scoreLabel.setText("Current Score: " + score + " points");
 	}
 	public void rstWrdSlctOnGui(StackPane node)
 	{
@@ -253,11 +258,14 @@ public class Workspace extends AppWorkspaceComponent
 		selectedWordArea.setEditable(false);
 		//SETUP FOUND WORDS AREA
 		foundWordArea.setEditable(false);
+		scoreLabel.setText("Current Score: " +
+				((GameData) appTemplate.getDataComponent()).getCurrentScore()+ " points");
 		//SETUP TARGET SCORE
 		trgtScoreLabel.setText("Target: " +
 				((GameData) appTemplate.getDataComponent()).getTargetScore()+ " points");
 		//VBOX FOR RIGHT PANE
-		VBox rightPane = new VBox(timeLabel,slctWordLabel, selectedWordArea, fndAreaLabel, foundWordArea, trgtScoreLabel);
+		VBox rightPane = new VBox(timeLabel,slctWordLabel, selectedWordArea, fndAreaLabel,
+				foundWordArea, scoreLabel, trgtScoreLabel);
 		gui.getAppPane().setRight(rightPane);
 		//DISPLAY TIMER DISPLAY
 		updateTimerDisplay(((GameData) appTemplate.getDataComponent()).getTimeAllowed());
@@ -317,6 +325,7 @@ public class Workspace extends AppWorkspaceComponent
 		slctWordLabel	= new Label("Selected Word");
 		fndAreaLabel	= new Label("Words Found");
 		timeLabel		= new Label();
+		scoreLabel		= new Label();
 		trgtScoreLabel	= new Label();
 		levelLabel 		= new Label();
 		subTitle		= new Label();
@@ -383,6 +392,7 @@ public class Workspace extends AppWorkspaceComponent
 		slctWordLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
 		fndAreaLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
 		timeLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
+		scoreLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
 		trgtScoreLabel.getStyleClass().setAll(propertyManager.getPropertyValue(RIGHT_PANE_TEXT_STYLE));
 		//SETUP TEXT AREA STYLE
 		selectedWordArea.getStyleClass().addAll(propertyManager.getPropertyValue(SELECTED_WORD_AREA));
