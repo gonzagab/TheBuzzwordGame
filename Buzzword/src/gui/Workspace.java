@@ -190,7 +190,7 @@ public class Workspace extends AppWorkspaceComponent
 		//SETUP DROP DOWN MENU FOR GAME MODE
 		gameModeMenu.getItems().setAll(ENGLISH_DICTIONARY.getLiteral(), FAMOUS_PEOPLE.getLiteral(),
 				SCIENCE.getLiteral(), PLACES.getLiteral());
-		gameModeMenu.setValue(SCIENCE.getLiteral());
+		gameModeMenu.setValue(ENGLISH_DICTIONARY.getLiteral());
 		gameModeMenu.setTooltip(new Tooltip(propertyManager.getPropertyValue(GAME_MODE_MENU_TOOLTIP)));
 	}
 	public void reloadHomeGuiSidebar()
