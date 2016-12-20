@@ -34,7 +34,7 @@ public class GameData implements AppDataComponent
 		wordsFound = new HashSet<>();
 		initPlayingGrid();
 		targetScore = 0;
-		timeAllowed = 2000;
+		timeAllowed = 60;
 		currentScore = 0;
 	}
 	public ArrayList<LetterNode> initPlayGrid()

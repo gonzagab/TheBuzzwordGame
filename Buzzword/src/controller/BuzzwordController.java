@@ -349,6 +349,9 @@ public class BuzzwordController implements FileController
 	}
 	public void handleKeyTyped(KeyEvent event)
 	{
+		//check that the player is actually playing
+		if(!isPlaying)
+			return;
 		//get the letter that was typed
 		char guess = event.getCode().toString().charAt(0);
 		//if its lower case turn it to upper case
