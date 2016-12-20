@@ -15,10 +15,10 @@ import javafx.stage.Stage;
 /**
  * @author Richard McKenna, Ritwik Banerjee
  */
-public class YesNoCancelDialogSingleton extends Stage {
+public class YesNoCancelDialogSingleton extends Stage
+{
     // HERE'S THE SINGLETON
     static YesNoCancelDialogSingleton singleton;
-
     // GUI CONTROLS FOR OUR DIALOG
     VBox   messagePane;
     Scene  messageScene;
@@ -27,29 +27,27 @@ public class YesNoCancelDialogSingleton extends Stage {
     Button noButton;
     Button cancelButton;
     String selection;
-
     // CONSTANT CHOICES
     public static final String YES    = "Yes";
     public static final String NO     = "No";
     public static final String CANCEL = "Cancel";
-
     /**
      * Note that the constructor is private since it follows
      * the singleton design pattern.
      */
-    private YesNoCancelDialogSingleton() {}
-
+    private YesNoCancelDialogSingleton()
+	{}
     /**
      * The static accessor method for this singleton.
      *
      * @return The singleton object for this type.
      */
-    public static YesNoCancelDialogSingleton getSingleton() {
+    public static YesNoCancelDialogSingleton getSingleton()
+	{
         if (singleton == null)
             singleton = new YesNoCancelDialogSingleton();
         return singleton;
     }
-
     /**
      * This method initializes the singleton for use.
      *
@@ -110,7 +108,6 @@ public class YesNoCancelDialogSingleton extends Stage {
         messageScene = new Scene(messagePane);
         this.setScene(messageScene);
     }
-
     /**
      * Accessor method for getting the selection the user made.
      *
@@ -121,7 +118,6 @@ public class YesNoCancelDialogSingleton extends Stage {
     {
         return selection;
     }
-
     /**
      * This method loads a custom message into the label
      * then pops open the dialog.
@@ -129,7 +125,8 @@ public class YesNoCancelDialogSingleton extends Stage {
      * @param title   The title to appear in the dialog window bar.
      * @param message Message to appear inside the dialog.
      */
-    public void show(String title, String message) {
+    public void show(String title, String message)
+	{
         // SET THE DIALOG TITLE BAR TITLE
         setTitle(title);
 
@@ -141,5 +138,10 @@ public class YesNoCancelDialogSingleton extends Stage {
         // DO MORE WORK.
         showAndWait();
     }
-    
+    public void setButtonText(String yesBttn, String noBttn, String cancelBttn)
+	{
+		yesButton.setText(yesBttn);
+		noButton.setText(noBttn);
+		cancelButton.setText(cancelBttn);
+	}
 }

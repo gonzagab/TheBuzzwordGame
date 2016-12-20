@@ -34,7 +34,7 @@ public class GameData implements AppDataComponent
 		wordsFound = new HashSet<>();
 		initPlayingGrid();
 		targetScore = 0;
-		timeAllowed = 500;
+		timeAllowed = 2000;
 		currentScore = 0;
 	}
 	public ArrayList<LetterNode> initPlayGrid()
@@ -161,7 +161,7 @@ public class GameData implements AppDataComponent
 	{
 		playingGrid = new ArrayList<>();
 		for(int i = 0; i<16; i++)
-			playingGrid.add(new LetterNode('-'));
+			playingGrid.add(new LetterNode('-', i));
 		//NODE 0
 		playingGrid.get(0).setAdjacentNode(playingGrid.get(1), 2);
 		playingGrid.get(0).setAdjacentNode(playingGrid.get(5), 3);
@@ -419,13 +419,24 @@ public class GameData implements AppDataComponent
 				index = 0;
 				while(playingGrid.get(index).getLetter() != word.charAt(0))
 					index++;
-				currentNode = playingGrid.get(index);
-				visitedNodes.add(currentNode);
-				nextNode(word.substring(1), currentNode);
-				if(endOfWord)
+				while(index < 16)
 				{
-					System.out.println(word);
-					goodWords.add(word);
+					currentNode = playingGrid.get(index);
+					visitedNodes.add(currentNode);
+					nextNode(word.substring(1), currentNode);
+					if(endOfWord)
+					{
+						System.out.println(word);
+						goodWords.add(word);
+						break;
+					}
+					else
+						do
+						{
+							index++;
+							if(index > 15)
+								break;
+						}while(playingGrid.get(index).getLetter() != word.charAt(0));
 				}
 			}
 		}

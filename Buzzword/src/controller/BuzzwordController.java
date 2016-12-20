@@ -1,42 +1,37 @@
 package controller;
 
 import apptemplate.AppTemplate;
-import com.sun.corba.se.pept.transport.EventHandler;
 import com.sun.corba.se.spi.orbutil.threadpool.Work;
-import com.sun.deploy.config.Platform;
 import data.GameData;
-import data.GameDataFile;
 import gamelogic.GameMode;
 import gamelogic.LetterNode;
 import gamelogic.UserProfile;
 import gui.Workspace;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.Event;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 import propertymanager.PropertyManager;
 import ui.AppGUI;
 import ui.AppMessageDialogSingleton;
 import ui.YesNoCancelDialogSingleton;
 
-import java.io.*;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Stack;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 
-import static gamelogic.GameMode.*;
 import static settings.AppPropertyType.*;
 
 /**
@@ -53,8 +48,11 @@ public class BuzzwordController implements FileController
 	private Timeline 	timeline;
 	private int 		counter;
 	//used to verify word input
-	LinkedList<StackPane>	wordInProgress;	//Nodes tha have been visited
-	StackPane				preNode;
+	private LinkedList<StackPane>	wordInProgress;	//Nodes tha have been visited
+	private StackPane				preNode;
+	private ArrayList<String>		typedLetters;
+	private Set[] 					visitedKNodes;
+	boolean endOfWord;
 	/*/**************************
 	 ********CONSTRUCTOR*********
 	 ****************************/
@@ -71,6 +69,10 @@ public class BuzzwordController implements FileController
 		timeline.setCycleCount(counter);
 		//setup variables needed
 		wordInProgress = new LinkedList<>();
+		typedLetters = new ArrayList<>();
+		visitedKNodes = new HashSet[5];
+		for(int i = 0; i < 5; i++)
+			visitedKNodes[i] = new HashSet<>();
 	}
 	@Override
 	public void handleSaveRequest() throws IOException
@@ -345,15 +347,90 @@ public class BuzzwordController implements FileController
 			((Workspace) app.getWorkspaceComponent()).updateWrdSlctOnGui(gridPiece);
 		}
 	}
+	public void handleKeyTyped(KeyEvent event)
+	{
+		//get the letter that was typed
+		char guess = event.getCode().toString().charAt(0);
+		//if its lower case turn it to upper case
+		if(guess > 96 && guess < 123)
+			guess -= 32;
+			//if key typed is enter
+		if(event.getCode().equals(KeyCode.ENTER))
+		{
+			System.out.println("Entered Key Pressed");
+			dragEnd(String.valueOf(typedLetters.toArray()));
+			typedLetters = new ArrayList<>();
+			for(int i = 0; i < visitedKNodes.length; i++)
+				visitedKNodes[i] = new HashSet<>();
+		}
+		//if its and upper case letter then lets update grid
+		else if(guess > 64 && guess < 91)
+		{
+			//added newly pressed key to array of letters pressed
+			typedLetters.add(String.valueOf(guess));
+			//look for solutions
+			ArrayList<LetterNode> playingGrid = gameData.getPlayingGrid();
+			LetterNode currentNode;
+			for(int i = 0; i < 5; i++)
+				visitedKNodes[i] = new HashSet<>();
+			//END OF WORD RESET; WORD HAS NOT REACHED THE END
+			endOfWord = false;
+			boolean wordPossible = true;
+			boolean endOfWordNeverReached = true;
+			//IF ANY OF THE LETTERS IN A WORD ARE NOT IN THE GRID THEN, NEXT WORD
+			for(int j = 0; j < typedLetters.size(); j++)
+				if(!playingGrid.contains(new LetterNode((typedLetters.get(j).charAt(0) ))) )
+				{
+					wordPossible = false; ///WORD CAN NOT BE IN GRID
+					break;
+				}
+			if(wordPossible)
+			{
+				//initialize starting point
+				int index = 0;
+				int i = 0;
+				while(playingGrid.get(index).getLetter() != typedLetters.get(0).charAt(0))
+					index++;
+				while(index < 16)
+				{
+					currentNode = playingGrid.get(index);
+					//RESET VISITED NODES FOR WORD
+					nextNode(typedLetters.subList(1, typedLetters.size()), currentNode, i);
+					if(endOfWord)
+					{
+						endOfWordNeverReached = false;
+						Iterator iter = visitedKNodes[i].iterator();
+						//highlight the word path found
+						for(int j = 0; j < visitedKNodes[i].size(); j++)
+							((Workspace)app.getWorkspaceComponent()).updateWrdSlctOnGui(((LetterNode)iter.next()).getIndexOfNode());
+					}
+					do
+					{
+						index++;
+						if(index > 15)
+							break;
+					}while(playingGrid.get(index).getLetter() != typedLetters.get(0).charAt(0));
+					i++;
+				}
+				if(endOfWordNeverReached)
+					typedLetters.remove(typedLetters.size()-1);
+			}
+			else
+				typedLetters.remove(typedLetters.size()-1);
+		}
+		else
+			System.out.println(event.getCode());
+	}
 	public void dragEnd(String wordFound)
 	{
 		if(gameData.addFoundWord(wordFound))
 		{
-			((Workspace) app.getWorkspaceComponent()).updateWrdFndDsp(wordFound + "     | " + wordFound.length()*2);
+			((Workspace) app.getWorkspaceComponent()).updateWrdFndDsp(wordFound + "\t\t| " + wordFound.length()*2);
 			((Workspace) app.getWorkspaceComponent()).updateScore(gameData.getCurrentScore());
 		}
 		((Workspace)app.getWorkspaceComponent()).clrWrdSlctDsp(true);
 		((Workspace)app.getWorkspaceComponent()).rstWrdSlctOnGui(null);
+		//clear variables used to keep track of word
 		wordInProgress.clear();
 		preNode = null;
 	}
@@ -367,22 +444,29 @@ public class BuzzwordController implements FileController
 	************************/
 	public void handleEndGame()
 	{
+		//get grid pane
 		GridPane temp = (GridPane)((VBox)app.getGUI().getAppPane().getCenter()).getChildren().get(1);
+		//disable grid pane so that no more drags are allowed
 		for(int i = 0; i<16; i++)
 			temp.getChildren().get(i).setDisable(true);
-		AppMessageDialogSingleton endMessage = AppMessageDialogSingleton.getSingleton();
+		//get end game pop up
+		YesNoCancelDialogSingleton endMessage = YesNoCancelDialogSingleton.getSingleton();
+		//set up text to go into pop up
 		StringBuilder sb = new StringBuilder();
-		sb.append("Words Found:\n");
 		Iterator<String> wf = gameData.getWordsFound().iterator();
 		Iterator<String> gw = gameData.getGoodWords().iterator();
+		//list found words
+		sb.append("Words Found:\n");
 		while(wf.hasNext())
 			sb.append(wf.next() + "\n");
+		//list all possible words in grid
 		sb.append("All Possible Words in Grid:\n");
 		while(gw.hasNext())
 			sb.append(gw.next() + "\n");
 		sb.append("Total Score: " + gameData.getCurrentScore());
 		//CHECK TO SAVE
-		if(gameData.getCurrentScore() >= gameData.getTargetScore())
+		boolean hasWon = gameData.getCurrentScore() >= gameData.getTargetScore();
+		if(hasWon)
 		{
 			System.out.println("Winner winner chicken din din");
 			if(gameData.getCurrentLevel() >= gameData.getUser().getModeProgress(gameData.getCurrentMode()))
@@ -397,8 +481,56 @@ public class BuzzwordController implements FileController
 				e.printStackTrace();
 			}
 		}
+		Platform.runLater(()->
+		{
+			if(hasWon)
+				endMessage.setButtonText("Replay Level", "Next Level", "Quit");
+			else
+				endMessage.setButtonText("Replay Level", "Home", "Quit");
+			endMessage.show("End of Game", sb.toString());
+			endMessage.setButtonText("Yes", "No", "Cancel");
+			String tempSelection = endMessage.getSelection();
+			if(tempSelection.equals("Replay Level"))
+			{
+				counter					= gameData.getTimeAllowed();
+				isPlaying				= false;
+				startedPlaying			= false;
+				//RESET TIMER
+				timeline.stop();
+				timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> counterMethod()));
+				timeline.setOnFinished(event -> handleEndGame());
+				timeline.setCycleCount(counter);
+				//clear word select area
+				((TextArea)((VBox)app.getGUI().getAppPane().getRight()).getChildren().get(2)).clear();
+				//cleat words found area
+				((TextArea)((VBox)app.getGUI().getAppPane().getRight()).getChildren().get(4)).clear();
+				((Workspace) app.getWorkspaceComponent()).loadGameLevelGUI(
+						gameData.getCurrentLevel(), gameData.getCurrentMode());
+			}
+			else if(tempSelection.equals("Next Level"))
+			{
+				counter					= gameData.getTimeAllowed();
+				isPlaying				= false;
+				startedPlaying			= false;
+				//RESET TIMER
+				timeline.stop();
+				timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> counterMethod()));
+				timeline.setOnFinished(event -> handleEndGame());
+				timeline.setCycleCount(counter);
+				//clear word select area
+				((TextArea)((VBox)app.getGUI().getAppPane().getRight()).getChildren().get(2)).clear();
+				//cleat words found area
+				((TextArea)((VBox)app.getGUI().getAppPane().getRight()).getChildren().get(4)).clear();
+				((Workspace) app.getWorkspaceComponent()).loadGameLevelGUI(
+						gameData.getCurrentLevel() + 1, gameData.getCurrentMode());
+			}
+			else
+			{
+				handleHomeRequest();
+			}
+			System.out.println(endMessage.getSelection());
+		});
 		gameData.reset();
-		endMessage.show("End of Game", sb.toString());
 	}
 	/*/**********************
 	 *****PROMPT METHODS*****
@@ -406,10 +538,7 @@ public class BuzzwordController implements FileController
 	private boolean promptToSave() throws IOException
 	{
 		YesNoCancelDialogSingleton wannaClose = YesNoCancelDialogSingleton.getSingleton();
-
-		wannaClose.init(app.getGUI().getWindow());
 		wannaClose.show("Leave?", "Would you like to save before continuing?");
-
 		String tmp = wannaClose.getSelection();
 		if(tmp.equals("Yes"))
 			handleSaveRequest();
@@ -420,11 +549,8 @@ public class BuzzwordController implements FileController
 	public boolean promptForClosing()
 	{
 		YesNoCancelDialogSingleton wannaClose = YesNoCancelDialogSingleton.getSingleton();
-
-		wannaClose.init(app.getGUI().getWindow());
 		wannaClose.show
-				("Currently Playing", "Would you like to close the application even though you are currently playing a game?");
-
+				("Currently Playing", "Would you like to close the application even though\nyou are currently playing a game?");
 		String tmp = wannaClose.getSelection();
 		if(tmp.equals("Yes"))
 			return true;
@@ -440,5 +566,40 @@ public class BuzzwordController implements FileController
 	public void startedPlaying(boolean startedPlaying)
 	{
 		this.startedPlaying = startedPlaying;
+	}
+	/*/**********************
+	 ****PRIVATE METHODS*****
+	 ************************/
+	private void nextNode(List<String> word, LetterNode currentNode, int i)
+	{
+		visitedKNodes[i].add(currentNode);
+		//CHECK IF WE REACHED THE END
+		if(word.isEmpty() || word == null)
+			endOfWord = true;
+		//ON THE WAY OUT
+		if(endOfWord)
+			return;
+		//CHECK ALL ADJACENT NODES TO CURRENT NODE
+		for(int k = 0; k < 8; k++)
+		{
+			//check for null adjacent nodes
+			while(currentNode.getAdjacentNode(k) == null)
+			{
+				k++;
+				if(k>7)
+					break;
+			}
+			if(k>7)
+				continue;
+			//ADJACENT NODE FOUND
+			if(currentNode.getAdjacentNode(k).getLetter() == word.get(0).charAt(0) && !visitedKNodes[i].contains(currentNode.getAdjacentNode(k)))
+			{
+				nextNode(word.subList(1, word.size()), currentNode.getAdjacentNode(k), i);
+				//DID WE REACH THE END?
+				if(endOfWord)
+					return;
+			}
+		}
+		visitedKNodes[i].remove(currentNode);
 	}
 }

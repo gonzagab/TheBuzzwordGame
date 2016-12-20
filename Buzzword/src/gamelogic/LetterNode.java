@@ -8,6 +8,7 @@ public class LetterNode
 	public static final int TOTAL_ADJACENT_NODES = 8;
 	private LetterNode[]	adjacentNode;
 	private char			letter;
+	private int				indexOfNode;
 	/*/*************************
 	 ****CONSTRUCTOR METHODS****
 	 ***************************/
@@ -19,6 +20,12 @@ public class LetterNode
 	{
 		adjacentNode = new LetterNode[TOTAL_ADJACENT_NODES];
 		this.letter = letter;
+	}
+	public LetterNode(char letter, int indexOfNode)
+	{
+		adjacentNode = new LetterNode[TOTAL_ADJACENT_NODES];
+		this.letter = letter;
+		this.indexOfNode = indexOfNode;
 	}
 	public LetterNode(LetterNode[] adjacentNode, char letter)
 	{
@@ -41,9 +48,13 @@ public class LetterNode
 	{
 		return String.valueOf(letter);
 	}
+	public int getIndexOfNode()
+	{
+		return indexOfNode;
+	}
 	/*/****************************
-	********SETTER METHODS*********
-	******************************/
+		********SETTER METHODS*********
+		******************************/
 	public void setAdjacentNode(LetterNode[] adjacentNode)
 	{
 		this.adjacentNode = adjacentNode;
@@ -67,9 +78,13 @@ public class LetterNode
 		else
 			return false;
 	}
+	public void setIndexOfNode(int indexOfNode)
+	{
+		this.indexOfNode = indexOfNode;
+	}
 	/*/****************************
-	*******BOOLEAN METHODS*********
-	******************************/
+		*******BOOLEAN METHODS*********
+		******************************/
 	public boolean isAdjacent(LetterNode node)
 	{
 		//if the node in question is null or the same node

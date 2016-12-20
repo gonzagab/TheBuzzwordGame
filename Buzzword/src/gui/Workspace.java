@@ -144,6 +144,12 @@ public class Workspace extends AppWorkspaceComponent
 	{
 		((Circle)node.getChildren().get(0)).setFill(Paint.valueOf("blue"));
 	}
+	public void updateWrdSlctOnGui(int nodeIndex)
+	{
+		StackPane node = (StackPane) ((GridPane)((VBox)gui.getAppPane().getCenter())
+				.getChildren().get(1)).getChildren().get(nodeIndex);
+		((Circle)node.getChildren().get(0)).setFill(Paint.valueOf("blue"));
+	}
 	public void updateScore(int score)
 	{
 		scoreLabel.setText("Current Score: " + score + " points");
@@ -233,6 +239,11 @@ public class Workspace extends AppWorkspaceComponent
 		}
 		VBox levelSelectPane = new VBox(subTitle, levelDisplayPane);
 		gui.getAppPane().setCenter(levelSelectPane);
+		//RIGHT PANE SPACE HOLDER
+		Region space = new Region();
+		space.setMinWidth(200);
+		HBox.setHgrow(space, Priority.ALWAYS);
+		gui.getAppPane().setRight(space);
 	}
 	public void loadGameLevelGUI(int level, GameMode mode)
 	{
@@ -271,25 +282,8 @@ public class Workspace extends AppWorkspaceComponent
 		gui.getAppPane().setRight(rightPane);
 		//DISPLAY TIMER DISPLAY
 		updateTimerDisplay(((GameData) appTemplate.getDataComponent()).getTimeAllowed());
-
 		//KEY PRESSED FOR INPUTTING GUESS WORD
-		GridPane tempGrid = (GridPane)((VBox)gui.getAppPane().getCenter()).getChildren().get(1);
-		gui.getPrimaryScene().setOnKeyTyped(event ->
-		{
-			char guess = event.getCharacter().charAt(0);
-			if(guess > 96 && guess < 123)
-				guess -= 32;
-			if(guess > 64 && guess < 91)
-			{
-				for(int i = 0; i < 16; i++)
-				{
-					StackPane  node = (StackPane)tempGrid.getChildren().get(i);
-					String letter = ((Label)node.getChildren().get(1)).getText();
-					if(letter.charAt(0) == guess)
-						((BuzzwordController)gui.getFileController()).nodeSelected(node);
-				}
-			}
-		});
+		gui.getPrimaryScene().setOnKeyPressed(event -> ((BuzzwordController)gui.getFileController()).handleKeyTyped(event));
 	}
 	/*/***************************************************
 	 ******************SETUP METHODS**********************
@@ -510,49 +504,4 @@ public class Workspace extends AppWorkspaceComponent
 		}
 		return gridGame;
 	}
-//	private StackPane setupGridLevel(int h)
-//	{
-//		BuzzwordController controller = (BuzzwordController)gui.getFileController();
-//		StackPane playGrid = new StackPane();
-//		playGrid.setAlignment(Pos.CENTER);
-//		GridPane letterGrid = new GridPane();
-//		letterGrid.setAlignment(Pos.CENTER);
-//		GridPane circleGrid = new GridPane();
-//		circleGrid.setAlignment(Pos.CENTER);
-//		Circle container;
-//
-//		GameData dataComponent = (GameData) appTemplate.getDataComponent();
-//		Label[][] letter = new Label[4][4];
-//		ArrayList gridLetters = dataComponent.initPlayGrid();
-//
-//		for(int i = 0; i<4; i++)
-//		{
-//			for(int j = 0; j < 4; j++)
-//			{
-//				letter[i][j] = new Label(gridLetters.get(j+i*4).toString());
-//				int finalI = i;
-//				int finalJ = j;
-//				//circle grid
-//				container = new Circle(30, Paint.valueOf("white"));
-//				Circle containerF = container;
-//				letter[i][j].setOnMousePressed(e -> controller.nodeSelected(letter[finalI][finalJ].getText()));
-//				letter[i][j].setOnMouseDragEntered(e -> controller.nodeSelected(letter[finalI][finalJ].getText()));
-//				letter[i][j].setOnDragDetected(e ->
-//				{
-//					containerF.startFullDrag();
-//					controller.nodeSelected(letter[finalI][finalJ].getText());
-//				});
-//
-//				circleGrid.add(container, i, j);
-//				circleGrid.setMargin(container, new Insets(10));
-//				//letter grid
-//				letter[i][j].getStyleClass().setAll(propertyManager.getPropertyValue(LETTER_STYLE));
-//				letterGrid.add(letter[i][j], j, i);
-//				letterGrid.setMargin(letter[i][j], new Insets(30, 27, 25, 32));
-//			}
-//		}
-//		letterGrid.setVisible(false);
-//		playGrid.getChildren().addAll(circleGrid, letterGrid);
-//		return playGrid;
-//	}
 }
