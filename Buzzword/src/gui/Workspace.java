@@ -44,6 +44,7 @@ public class Workspace extends AppWorkspaceComponent
 	Button			playButton;		//Button to start playing a level
 	Button			homeButton;		//Sends the user home
 	Button			userLabel;		//Temporary space holder for username
+	Button			saveButton;		//
 			/*LABELS*/
 	Label       	gameHeader;     //the header of the game
 	Label 			levelLabel;		//Label that displays the level
@@ -284,6 +285,25 @@ public class Workspace extends AppWorkspaceComponent
 		updateTimerDisplay(((GameData) appTemplate.getDataComponent()).getTimeAllowed());
 		//KEY PRESSED FOR INPUTTING GUESS WORD
 		gui.getPrimaryScene().setOnKeyPressed(event -> ((BuzzwordController)gui.getFileController()).handleKeyTyped(event));
+	}
+	public void loadProfileInfoGUI()
+	{
+		//GET PANE TO WORK IN
+		GridPane layout = new GridPane();
+		gui.getAppPane().setCenter(layout);
+		//SET UP TEXT FIELDS
+		TextField nameInput = new TextField();
+		TextField passwordInput = new TextField();
+		//SET UP PROMPT TEXT
+		nameInput.setText(((GameData)appTemplate.getDataComponent()).getUser().getUsername());
+		passwordInput.setText(((GameData)appTemplate.getDataComponent()).getUser().getPassword());
+		//SET UP SPACING AND PADDING
+		layout.setPadding(new Insets(50));
+		layout.setVgap(20);
+		//ADD EVERYTHING INTO THE LAYOUT
+		layout.add(nameInput, 0, 0);
+		layout.add(passwordInput, 0, 1);
+		layout.add(newAccountBttn, 0, 2);
 	}
 	/*/***************************************************
 	 ******************SETUP METHODS**********************

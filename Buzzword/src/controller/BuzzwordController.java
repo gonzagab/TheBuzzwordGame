@@ -358,7 +358,10 @@ public class BuzzwordController implements FileController
 		if(event.getCode().equals(KeyCode.ENTER))
 		{
 			System.out.println("Entered Key Pressed");
-			dragEnd(String.valueOf(typedLetters.toArray()));
+			StringBuilder sb = new StringBuilder();
+			for(int i = 0; i < typedLetters.size(); i++)
+				sb.append(typedLetters.toArray()[i]);
+			dragEnd(sb.toString());
 			typedLetters = new ArrayList<>();
 			for(int i = 0; i < visitedKNodes.length; i++)
 				visitedKNodes[i] = new HashSet<>();
