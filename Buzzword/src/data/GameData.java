@@ -34,7 +34,7 @@ public class GameData implements AppDataComponent
 		wordsFound = new HashSet<>();
 		initPlayingGrid();
 		targetScore = 0;
-		timeAllowed = 30;
+		timeAllowed = 500;
 		currentScore = 0;
 	}
 	public ArrayList<LetterNode> initPlayGrid()
@@ -392,7 +392,6 @@ public class GameData implements AppDataComponent
 	private Set<LetterNode> visitedNodes;
 	private void solveGrid()
 	{
-		System.out.println("Solving Grid");
 		String word;
 		LetterNode currentNode;
 		int index;
@@ -454,10 +453,10 @@ public class GameData implements AppDataComponent
 			if(k>7)
 				continue;
 			//ADJACENT NODE FOUND
-			if(currentNode.getAdjacentNode(k).getLetter() == word.charAt(0))
+			if(currentNode.getAdjacentNode(k).getLetter() == word.charAt(0) && !visitedNodes.contains(currentNode.getAdjacentNode(k)))
 			{
 				nextNode(word.substring(1), currentNode.getAdjacentNode(k));
-				//DID WE EACH THE END?
+				//DID WE REACH THE END?
 				if(endOfWord)
 					return;
 			}

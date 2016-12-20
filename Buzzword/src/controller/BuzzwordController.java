@@ -7,6 +7,7 @@ import com.sun.deploy.config.Platform;
 import data.GameData;
 import data.GameDataFile;
 import gamelogic.GameMode;
+import gamelogic.LetterNode;
 import gamelogic.UserProfile;
 import gui.Workspace;
 import javafx.animation.KeyFrame;
@@ -321,13 +322,28 @@ public class BuzzwordController implements FileController
 		//check for cycles
 		if(wordInProgress.contains(gridPiece))
 			return;
-		//check that node is adjacent.
-
-		//all test passed
-		preNode = wordInProgress.peekLast();
-		wordInProgress.add(gridPiece);
-		((Workspace)app.getWorkspaceComponent()).updateWrdSlctDsp(((Label)gridPiece.getChildren().get(1)).getText());
-		((Workspace)app.getWorkspaceComponent()).updateWrdSlctOnGui(gridPiece);
+		//check that node is adjacent
+		int indexOfPreNode = ((GridPane)((VBox)app.getGUI().getAppPane().getCenter()).getChildren().get(1)).getChildrenUnmodifiable().indexOf(wordInProgress.peekLast());
+		int indexOfCurNode = ((GridPane)((VBox)app.getGUI().getAppPane().getCenter()).getChildren().get(1)).getChildrenUnmodifiable().indexOf(gridPiece);
+		boolean nodeIsAdjacent = false;
+		try
+		{
+			LetterNode preLetterNode = gameData.getPlayingGrid().get(indexOfPreNode);
+			LetterNode curLetterNode = gameData.getPlayingGrid().get(indexOfCurNode);
+			if(preLetterNode.isAdjacent(curLetterNode))
+				nodeIsAdjacent = true;
+		}catch(Exception e)
+		{
+		}
+		//if all test are passed
+		if(nodeIsAdjacent || wordInProgress.isEmpty())
+		{
+			//all test passe
+			preNode = wordInProgress.peekLast();
+			wordInProgress.add(gridPiece);
+			((Workspace) app.getWorkspaceComponent()).updateWrdSlctDsp(((Label) gridPiece.getChildren().get(1)).getText());
+			((Workspace) app.getWorkspaceComponent()).updateWrdSlctOnGui(gridPiece);
+		}
 	}
 	public void dragEnd(String wordFound)
 	{
@@ -355,8 +371,6 @@ public class BuzzwordController implements FileController
 		for(int i = 0; i<16; i++)
 			temp.getChildren().get(i).setDisable(true);
 		AppMessageDialogSingleton endMessage = AppMessageDialogSingleton.getSingleton();
-		endMessage.init(app.getGUI().getWindow());
-
 		StringBuilder sb = new StringBuilder();
 		sb.append("Words Found:\n");
 		Iterator<String> wf = gameData.getWordsFound().iterator();

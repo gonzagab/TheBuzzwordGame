@@ -101,9 +101,11 @@ public class Workspace extends AppWorkspaceComponent
 		homePane.setAlignment(Pos.TOP_CENTER);
 		//SET THE HOME PANE IN THE CENTER
 		gui.getAppPane().setCenter(homePane);
-		//CLEAR RIGHT PANE JUST IN CASE
-		gui.getAppPane().setRight(null);
-	}
+		//PUT AN EMPTY REGION IN RIGHT PANE JUST IN CASE
+		Region space = new Region();
+		space.setMinWidth(200);
+		HBox.setHgrow(space, Priority.ALWAYS);
+		gui.getAppPane().setRight(space);	}
 	/*GAME PLAY MODIFIERS*/
 	public void updateTimerDisplay(int count)
 	{
@@ -310,6 +312,7 @@ public class Workspace extends AppWorkspaceComponent
 		gui.getAppPane().setCenter(homePane);
 		//RIGHT PANE SPACE HOLDER
 		Region space = new Region();
+		space.setMinWidth(200);
 		HBox.setHgrow(space, Priority.ALWAYS);
 		gui.getAppPane().setRight(space);
 		//INITIALIZE BUTTONS AND OTHER THINGS - EVEN IF NOT ON GUI YET
@@ -497,8 +500,8 @@ public class Workspace extends AppWorkspaceComponent
 				StackPane gridPieceF = gridPiece;
 				//get up handlers for drag events
 				gridPiece.setOnMouseDragEntered(e -> controller.nodeSelected(gridPieceF));
-				gridPiece.setOnMouseClicked(e -> controller.nodeSelected(gridPieceF));
-				gridPiece.setOnDragDetected(e -> gridPieceF.startFullDrag());
+				gridPiece.setOnMouseClicked(	e -> controller.nodeSelected(gridPieceF));
+				gridPiece.setOnDragDetected(	e -> gridPieceF.startFullDrag());
 				gridPiece.setOnMouseDragReleased(e -> controller.dragEnd(selectedWordArea.getText()));
 				//add grid pieces to grid
 				gridGame.add(gridPiece, j, i);
