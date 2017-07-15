@@ -392,6 +392,7 @@ public class BuzzwordController implements FileController
 				}
 			if(wordPossible)
 			{
+				((Workspace)app.getWorkspaceComponent()).rstWrdSlctOnGui(null);
 				//initialize starting point
 				int index = 0;
 				int i = 0;
@@ -420,6 +421,8 @@ public class BuzzwordController implements FileController
 				}
 				if(endOfWordNeverReached)
 					typedLetters.remove(typedLetters.size()-1);
+				else
+					((Workspace)app.getWorkspaceComponent()).updateWrdSlctDsp(String.valueOf(guess));
 			}
 			else
 				typedLetters.remove(typedLetters.size()-1);
